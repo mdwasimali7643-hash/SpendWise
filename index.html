@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://kit.fontawesome.com/4c172fa7d3.js" crossorigin="anonymous"></script>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>SpendWISE</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       AUTH SECTION
+  ========================== -->
+
+  <div id="authSection">
+
+    <div class="auth-card">
+
+      <div class="brand">
+     
+        <h1>Spend<span>WISE</span></h1>
+      </div>
+
+      <p class="auth-subtitle">
+        Take control of your money.
+      </p>
+
+      <div class="auth-form">
+
+        <div class="input-group">
+          <label for="email">Email</label>
+
+          <input
+            type="email"
+            id="email"
+            placeholder="you@example.com"
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+          >
+        </div>
+
+        <button id="loginBtn" class="primary-btn">
+          Login
+          <span>→</span>
+        </button>
+
+        <div class="divider">
+          <span>or</span>
+        </div>
+
+        <button id="signupBtn" class="secondary-btn">
+          Create Account
+        </button>
+
+      </div>
+
+      <p class="security-text">
+        🔒 Your financial data stays private and secure.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       HOME SECTION
+  ========================== -->
+
+  <div id="homeSection" class="section">
+
+    <!-- HEADER -->
+
+    <header class="app-header">
+
+      <!-- Hamburger -->
+
+      <button
+        id="menuBtn"
+        class="menu-btn"
+        aria-label="Open menu"
+      >
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+
+      <!-- App Logo -->
+
+      <h1 class="app-title">
+        Spend<span>WISE</span>
+      </h1>
+
+
+      <!-- Spacer -->
+
+      <div class="header-spacer"></div>
+
+
+      <!-- Header Dropdown Menu -->
+
+      <div id="headerMenu" class="header-menu">
+
+        <!-- Profile -->
+
+        <button id="profileBtn" class="menu-item">
+
+          <i class="fa-solid fa-user"></i>
+
+          <span>Profile</span>
+
+        </button>
+
+
+        <!-- Theme -->
+
+        <button id="themeBtn" class="menu-item">
+
+          <i
+            id="themeIcon"
+            class="fa-solid fa-moon"
+          ></i>
+
+          <span id="themeText">
+            Dark Mode
+          </span>
+
+        </button>
+
+
+        <!-- Logout -->
+
+        <button
+          id="logoutBtn"
+          class="menu-item logout-item"
+        >
+
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+          <span>Log Out</span>
+
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         ADD TRANSACTION FAB
+    ========================== -->
+
+    <button
+      id="openTransactionModal"
+      class="add-fab"
+      aria-label="Add transaction"
+    >
+
+      <span>+</span>
+
+    </button>
+
+
+    <!-- =========================
+         BALANCE
+    ========================== -->
+
+    <div class="balance-card">
+
+      <p>Total Balance</p>
+
+      <h1 id="balance">
+        
+      </h1>
+
+    </div>
+
+
+    <!-- =========================
+         INCOME / EXPENSE
+    ========================== -->
+
+    <div class="summary">
+
+      <div class="income-card">
+
+        <p>Income</p>
+
+        <h2 id="income">
+          
+        </h2>
+
+      </div>
+
+
+      <div class="expense-card">
+
+        <p>Expense</p>
+
+        <h2 id="expense">
+          
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         ADD TRANSACTION MODAL
+    ========================== -->
+
+    <div
+      id="transactionModal"
+      class="transaction-modal"
+    >
+
+      <div class="transaction-modal-card">
+
+        <div class="transaction-modal-header">
+
+          <div>
+
+            <h2>
+              Add Transaction
+            </h2>
+
+            <p>
+              Record your income or expense
+            </p>
+
+          </div>
+
+
+          <button
+            id="closeTransactionModal"
+            class="modal-close"
+            aria-label="Close"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div id="inputContainer">
+
+          <div id="inputForm">
+
+            <div class="form-field">
+
+              <label for="expenseName">
+                Transaction
+              </label>
+
+              <input
+                type="text"
+                id="expenseName"
+                placeholder="e.g. Gym membership"
+              >
+
+            </div>
+
+
+            <div class="form-field">
+
+              <label for="expenseAmount">
+                Amount
+              </label>
+
+              <input
+                type="number"
+                id="expenseAmount"
+                placeholder="₹ 0"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div id="typeForm">
+
+            <label>
+              Type
+            </label>
+
+
+            <div
+              class="type-toggle"
+              id="typeToggle"
+            >
+
+              <button
+                type="button"
+                data-value="expense"
+                class="on"
+              >
+                Expense
+              </button>
+
+              <button
+                type="button"
+                data-value="income"
+              >
+                Income
+              </button>
+
+            </div>
+
+
+            <!-- Hidden actual select -->
+
+            <select id="type" hidden>
+
+              <option
+                value="expense"
+                selected
+              >
+                Expense
+              </option>
+
+              <option value="income">
+                Income
+              </option>
+
+            </select>
+
+
+            <label for="category">
+              Category:
+            </label>
+
+            <select id="category">
+
+              <option>🍕 Food</option>
+
+              <option>🛒 Shopping</option>
+
+              <option>🚗 Transport</option>
+
+              <option>🧾 Bills</option>
+
+              <option>🎬 Entertainment</option>
+
+              <option>💰 Salary</option>
+              
+              <option>💼 Business</option>
+          
+          <option>📱 Internet</option>
+          
+          <option>💻 Wifi</option>
+          
+          <option>🏷 Subscription</option>
+          
+          <option>✈ Travel</option>
+
+
+              <option>🛍 Beauty</option>
+
+              <option>🎁 Gift</option>
+
+              <option>🐶 Pet</option>
+
+              <option>💸 Investments</option>
+
+              <option>🏠Home</option>
+
+              <option>Others</option>
+
+            </select>
+
+          </div>
+
+
+          <br>
+
+
+          <button
+            type="submit"
+            id="addBtn"
+          >
+            + Add Transaction
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         EDIT TRANSACTION MODAL
+    ========================== -->
+
+    <div
+      id="editModal"
+      class="edit-modal"
+    >
+
+      <div class="edit-card">
+
+        <h2>
+          Edit Transaction
+        </h2>
+
+
+        <input
+          type="text"
+          id="editTitle"
+          placeholder="Transaction title"
+        >
+
+
+        <input
+          type="number"
+          id="editAmount"
+          placeholder="Amount"
+        >
+
+
+        <select id="editType">
+
+          <option value="expense">
+            Expense
+          </option>
+
+          <option value="income">
+            Income
+          </option>
+
+        </select>
+
+
+        <select id="editCategory">
+
+          <option>🍕 Food</option>
+
+          <option>🛒 Shopping</option>
+
+          <option>🚗 Transport</option>
+
+          <option>🧾 Bills</option>
+
+          <option>🎬 Entertainment</option>
+
+          <option>💰 Salary</option>
+          
+          <option>💼 Business</option>
+          
+          <option>📱 Internet</option>
+          
+          <option>💻 Wifi</option>
+          
+          <option>🏷 Subscription</option>
+          
+          <option>✈ Travel</option>
+
+          <option>🛍 Beauty</option>
+
+          <option>🎁 Gift</option>
+
+          <option>🐶 Pet</option>
+
+          <option>💸 Investments</option>
+
+          <option>🏠 Home</option>
+
+          <option>Others</option>
+
+        </select>
+
+
+        <div class="edit-buttons">
+
+          <button id="saveEditBtn">
+            Save Changes
+            <i class="fa-solid fa-circle-check"></i>
+          </button>
+
+          <button id="cancelEditBtn">
+            Cancel
+            <i class="fa-solid fa-circle-xmark"></i>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH + MONTH FILTER
+    ========================== -->
+
+    <div
+      class="filter-row"
+      id="searchForm"
+    >
+
+      <select id="monthFilter">
+
+        <option value="all">
+          All Transactions
+        </option>
+
+      </select>
+
+
+      <input
+        type="text"
+        id="searchBar"
+        placeholder="Search..."
+      >
+
+    </div>
+
+
+    <!-- TRANSACTION LIST -->
+
+    <div id="expenseList"></div>
+
+  </div>
+
+
+  <!-- =========================
+       ANALYTICS SECTION
+  ========================== -->
+
+  <div
+    id="analyticsSection"
+    class="section"
+  >
+
+    <h2 class="section-title">
+      Expense Breakdown
+    </h2>
+
+
+    <div class="chart-wrapper">
+
+      <canvas id="expenseChart"></canvas>
+
+    </div>
+
+
+    <!-- CATEGORY BREAKDOWN -->
+
+    <div class="category-breakdown">
+
+      <div class="breakdown-header">
+
+        <h3>
+          Spending by category
+        </h3>
+
+        <span id="totalExpenseLabel">
+          ₹0
+        </span>
+
+      </div>
+
+
+      <div id="categoryBreakdown">
+        <!-- JS inserts categories here -->
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       BOTTOM NAVIGATION
+  ========================== -->
+
+  <nav class="footer-nav">
+
+
+    <!-- HOME -->
+
+    <button
+      class="nav-btn active"
+      id="navHome"
+    >
+
+      <svg
+        width="22"
+        height="22"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+
+        <path
+          d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+        />
+
+      </svg>
+
+      <span>
+        Home
+      </span>
+
+    </button>
+
+
+    <!-- ANALYTICS -->
+
+    <button
+      class="nav-btn"
+      id="navAnalytics"
+    >
+
+      <svg
+        width="22"
+        height="22"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+
+        <path
+          d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2v-10h2v10zm4 0h-2v-4h2v4z"
+        />
+
+      </svg>
+
+      <span>
+        Analytics
+      </span>
+
+    </button>
+
+
+    <!-- BUDGET -->
+
+    <button
+      id="navBudget"
+      class="nav-btn"
+    >
+
+      <svg
+        width="22"
+        height="22"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+
+        <path
+          d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.89-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
+        />
+
+      </svg>
+
+      <span>
+        Budget
+      </span>
+
+    </button>
+
+  </nav>
+
+
+  <!-- =========================
+       BUDGET SECTION
+  ========================== -->
+
+  <div
+    id="budgetSection"
+    class="section"
+  >
+
+    <div class="budget-page">
+
+      <h2 class="budgetH1">
+        Monthly Budget
+      </h2>
+
+      <p class="budget-subtitle">
+        Manage your spending limit
+      </p>
+
+
+      <div class="budget-card">
+
+        <div class="budget-header">
+
+          <div>
+
+            <p>
+              Budget
+            </p>
+
+            <h2 id="budgetAmount">
+              ₹0
+            </h2>
+
+          </div>
+
+
+          <button id="editBudgetBtn">
+
+            <i class="fa-solid fa-pencil"></i>
+
+          </button>
+
+        </div>
+
+
+        <div class="budget-stats">
+
+          <div>
+
+            <span>
+              Spent
+            </span>
+
+            <strong id="budgetSpent">
+              ₹0
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              Remaining
+            </span>
+
+            <strong id="budgetRemaining">
+              ₹0
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="progress-container">
+
+          <div id="budgetProgress"></div>
+
+        </div>
+
+
+        <p id="budgetStatus">
+          Set your monthly budget
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       PROFILE SECTION
+  ========================== -->
+
+  <div
+    id="profileSection"
+    class="section"
+  >
+
+    <div class="profile-page">
+
+
+      <!-- PROFILE HEADER -->
+
+      <header class="profile-header">
+
+        <button
+          id="profileBackBtn"
+          class="profile-back-btn"
+          aria-label="Back to home"
+        >
+
+          <i class="fa-solid fa-arrow-left"></i>
+
+        </button>
+
+
+        <h2>
+          Profile
+        </h2>
+
+
+        <div class="profile-header-spacer"></div>
+
+      </header>
+
+
+      <!-- PROFILE HERO -->
+
+      <div class="profile-hero">
+
+        <div class="profile-avatar">
+
+          <i class="fa-solid fa-user"></i>
+
+        </div>
+
+
+        <h1>
+          SpendWISE User
+        </h1>
+
+
+        <p id="profileEmail">
+          your@email.com
+        </p>
+
+      </div>
+
+
+      <!-- =========================
+           ACCOUNT
+      ========================== -->
+
+      <div class="profile-card">
+
+        <div class="profile-card-title">
+
+          <span>
+            ACCOUNT
+          </span>
+
+        </div>
+
+
+        <!-- EMAIL -->
+
+        <div class="profile-row profile-row-static">
+
+          <div class="profile-row-icon">
+
+            <i class="fa-solid fa-envelope"></i>
+
+          </div>
+
+
+          <div class="profile-row-content">
+
+            <strong>
+              Email
+            </strong>
+
+            <small id="profileEmailRow">
+              your@email.com
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- CHANGE PASSWORD -->
+
+        <button
+          id="changePasswordBtn"
+          class="profile-row"
+        >
+
+          <div class="profile-row-icon">
+
+            <i class="fa-solid fa-lock"></i>
+
+          </div>
+
+
+          <div class="profile-row-content">
+
+            <strong>
+              Change Password
+            </strong>
+
+            <small>
+              Send a password reset email
+            </small>
+
+          </div>
+
+
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           SPENDWISE STATS
+      ========================== -->
+
+      <div class="profile-card">
+
+        <div class="profile-card-title">
+
+          <span>
+            YOUR SPENDWISE
+          </span>
+
+        </div>
+
+
+        <div class="profile-stats">
+
+          <div class="profile-stat">
+
+            <strong id="profileTransactions">
+              0
+            </strong>
+
+            <span>
+              Transactions
+            </span>
+
+          </div>
+
+
+          <div class="profile-stat">
+
+            <strong id="profileIncome">
+              ₹0
+            </strong>
+
+            <span>
+              Total Income
+            </span>
+
+          </div>
+
+
+          <div class="profile-stat">
+
+            <strong id="profileExpenses">
+              ₹0
+            </strong>
+
+            <span>
+              Total Expenses
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           PREFERENCES
+      ========================== -->
+
+      <div class="profile-card">
+
+        <div class="profile-card-title">
+
+          <span>
+            PREFERENCES
+          </span>
+
+        </div>
+
+
+        <!-- CURRENCY -->
+
+<button
+  id="currencyBtn"
+  class="profile-row"
+>
+
+  <div class="profile-row-icon">
+
+    <i class="fa-solid fa-coins"></i>
+
+  </div>
+
+  <div class="profile-row-content">
+
+    <strong>
+      Currency
+    </strong>
+
+    <small id="currencyText">
+      Indian Rupee (₹ INR)
+    </small>
+
+  </div>
+
+  <i class="fa-solid fa-chevron-right profile-chevron"></i>
+
+</button>
+
+
+        <!-- APPEARANCE -->
+
+        <button
+          id="profileThemeBtn"
+          class="profile-row"
+        >
+
+          <div class="profile-row-icon">
+
+            <i
+              id="profileThemeIcon"
+              class="fa-solid fa-moon"
+            ></i>
+
+          </div>
+
+
+          <div class="profile-row-content">
+
+            <strong>
+              Appearance
+            </strong>
+
+            <small id="profileThemeText">
+              Dark Mode
+            </small>
+
+          </div>
+
+
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           DATA & PRIVACY
+      ========================== -->
+
+      <div class="profile-card">
+
+        <div class="profile-card-title">
+
+          <span>
+            DATA & PRIVACY
+          </span>
+
+        </div>
+
+
+        <!-- EXPORT -->
+
+        <button
+          id="exportDataBtn"
+          class="profile-row"
+        >
+
+          <div class="profile-row-icon">
+
+            <i class="fa-solid fa-download"></i>
+
+          </div>
+
+
+          <div class="profile-row-content">
+
+            <strong>
+              Export Transactions
+            </strong>
+
+            <small>
+              Download your data as CSV
+            </small>
+
+          </div>
+
+
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           ABOUT
+      ========================== -->
+
+      <div class="profile-card about-card">
+
+        <div class="about-logo">
+          <img src="logo.png" height="70px" width="70px">
+        </div>
+
+        <p>
+          Simple, private expense tracking.
+        </p>
+
+
+        <small>
+          Version 1.0.0
+        </small>
+
+      </div>
+
+
+      <!-- PROFILE LOGOUT -->
+
+      <button
+        id="profileLogoutBtn"
+        class="profile-logout"
+      >
+
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+        Log Out
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       BUDGET MODAL
+  ========================== -->
+
+  <div
+    id="budgetModal"
+    class="budget-modal"
+  >
+
+    <div class="budget-modal-card">
+
+      <h2>
+        Set Monthly Budget
+      </h2>
+
+
+      <input
+        type="number"
+        id="budgetInput"
+        placeholder="Enter budget"
+        min="1"
+      >
+
+
+      <div class="budget-modal-buttons">
+
+        <button id="saveBudgetBtn">
+
+          Save Budget
+
+          <i class="fa-solid fa-circle-check"></i>
+
+        </button>
+
+
+        <button id="cancelBudgetBtn">
+
+          Cancel
+
+          <i class="fa-solid fa-circle-xmark"></i>
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+<!-- =========================
+     CURRENCY MODAL
+========================== -->
+
+<div
+  id="currencyModal"
+  class="currency-modal"
+>
+
+  <div class="currency-modal-card">
+
+    <div class="currency-modal-header">
+
+      <div>
+        <h2>Choose Currency</h2>
+        <p>Select your preferred currency</p>
+      </div>
+
+      <button
+        id="closeCurrencyModal"
+        class="modal-close"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="currency-options">
+
+      <button
+        class="currency-option"
+        data-currency="INR"
+      >
+
+        <span class="currency-flag">🇮🇳</span>
+
+        <span class="currency-info">
+          <strong>Indian Rupee</strong>
+          <small>₹ INR</small>
+        </span>
+
+        <i class="fa-solid fa-check currency-check"></i>
+
+      </button>
+
+
+      <button
+        class="currency-option"
+        data-currency="USD"
+      >
+
+        <span class="currency-flag">🇺🇸</span>
+
+        <span class="currency-info">
+          <strong>US Dollar</strong>
+          <small>$ USD</small>
+        </span>
+
+        <i class="fa-solid fa-check currency-check"></i>
+
+      </button>
+
+
+      <button
+        class="currency-option"
+        data-currency="GBP"
+      >
+
+        <span class="currency-flag">🇬🇧</span>
+
+        <span class="currency-info">
+          <strong>British Pound</strong>
+          <small>£ GBP</small>
+        </span>
+
+        <i class="fa-solid fa-check currency-check"></i>
+
+      </button>
+
+
+      <button
+        class="currency-option"
+        data-currency="EUR"
+      >
+
+        <span class="currency-flag">🇪🇺</span>
+
+        <span class="currency-info">
+          <strong>Euro</strong>
+          <small>€ EUR</small>
+        </span>
+
+        <i class="fa-solid fa-check currency-check"></i>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+  <!-- MAIN JAVASCRIPT -->
+
+  <script
+    type="module"
+    src="main.js"
+  ></script>
+
+</body>
+
+</html>
