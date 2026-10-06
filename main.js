@@ -108,6 +108,9 @@ const budgetSpent = document.getElementById("budgetSpent");
 const budgetRemaining = document.getElementById("budgetRemaining");
 const budgetProgress = document.getElementById("budgetProgress");
 const budgetStatus = document.getElementById("budgetStatus");
+const budgetAlert = document.getElementById('budgetAlerts')
+const budgetAlertH3 = document.getElementById('budgetAlertH3')
+const budgetAlertP = document.getElementById('budgetAlertP')
 
 const editBudgetBtn = document.getElementById("editBudgetBtn");
 
@@ -833,12 +836,21 @@ function updateBudget() {
   if (percentage >= 100) {
     budgetStatus.textContent = "Budget exceeded!";
     budgetProgress.style.background = "linear-gradient(90deg, #B91C1C, #EF4444)";
+    budgetAlertH3.textContent = "Oops!"
+    budgetAlertP.textContent = "You've used 100% of your budget!"
+    budgetAlert.style.background = "#b91c1c"
   } else if (percentage >= 80) {
     budgetStatus.textContent = "You're close to your budget";
     budgetProgress.style.background = "linear-gradient(90deg, #D97706, #FBBF24)";
+    budgetAlertH3.textContent = "Be careful!"
+    budgetAlertP.textContent = "Looks like you've almost reached your limit..."
+    budgetAlert.style.background = "#fbbf24"
   } else {
     budgetStatus.textContent = `${percentage.toFixed(0)}% of budget used`;
     budgetProgress.style.background = "linear-gradient(90deg, #059669, #34D399)";
+    budgetAlertH3.textContent = "Very good!"
+    budgetAlertP.textContent = "You're on the right track!"
+    budgetAlert.style.background = "#34d399"
   }
 }
 
