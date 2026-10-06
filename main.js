@@ -829,15 +829,19 @@ function updateBudget() {
   const progress = Math.min(Math.max(percentage, 0), 100);
   budgetProgress.style.width = `${progress}%`;
   
+  // Set status text and gradient based on usage threshold
   if (percentage >= 100) {
-    budgetStatus.textContent = "Budget exceeded";
+    budgetStatus.textContent = "Budget exceeded!";
+    budgetProgress.style.background = "linear-gradient(90deg, #B91C1C, #EF4444)";
   } else if (percentage >= 80) {
     budgetStatus.textContent = "You're close to your budget";
+    budgetProgress.style.background = "linear-gradient(90deg, #D97706, #FBBF24)";
   } else {
-    budgetStatus.textContent =
-      `${percentage.toFixed(0)}% of budget used`;
+    budgetStatus.textContent = `${percentage.toFixed(0)}% of budget used`;
+    budgetProgress.style.background = "linear-gradient(90deg, #059669, #34D399)";
   }
 }
+
 
 
 async function saveBudget() {
@@ -941,6 +945,22 @@ async function loadBudget(user) {
     updateBudget();
   }
 }
+// ===============================
+// BUDGET BUTTON EVENTS
+// ===============================
+
+editBudgetBtn.addEventListener("click", () => {
+  budgetModal.style.display = "flex";
+  budgetInput.value = monthlyBudget > 0 ? monthlyBudget : "";
+  budgetInput.focus();
+});
+
+saveBudgetBtn.addEventListener("click", saveBudget);
+
+cancelBudgetBtn.addEventListener("click", () => {
+  budgetModal.style.display = "none";
+  budgetInput.value = "";
+});
 // =====================================
 // TRANSACTION MODAL
 // =====================================
