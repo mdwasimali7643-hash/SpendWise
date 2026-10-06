@@ -902,6 +902,29 @@ span{
   transition: width 0.4s ease;
 }
 
+#budgetAlerts{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  margin: 50px;
+  border: none;
+  border-radius: 30px;
+  opacity: 0.8;
+  box-shadow: 0 0 25px var(--budget-shadow);
+}
+#budgetAlertH3{
+  font-weight: bold;
+  font-style: italic;
+  text-transform: capitalize;
+}
+#budgetAlertP{
+  margin: 10px;
+  font-style: italic;
+}
+
 #budgetStatus {
   margin: 10px 0 0;
 
