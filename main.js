@@ -838,7 +838,7 @@ function updateBudget() {
     budgetProgress.style.background = "linear-gradient(90deg, #B91C1C, #EF4444)";
     budgetAlertH3.textContent = "Oops!"
     budgetAlertP.textContent = "You've used 100% of your budget!"
-    budgetAlert.style.background = "#b91c1c"
+    budgetAlert.style.background = "#ef4444"
   } else if (percentage >= 80) {
     budgetStatus.textContent = "You're close to your budget";
     budgetProgress.style.background = "linear-gradient(90deg, #D97706, #FBBF24)";
