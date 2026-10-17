@@ -346,7 +346,7 @@ span{
 
 /* Analytics Container */
 .section-title {
-  color: var(--accent-green-bright);
+  color: var(--text-main);
   font-size: 1.4rem;
   margin-bottom: 20px;
   text-align: center;
@@ -901,7 +901,6 @@ span{
 
   transition: width 0.4s ease;
 }
-
 #budgetAlerts{
   display: flex;
   flex-direction: column;
@@ -1029,11 +1028,12 @@ span{
   text-align: center;
   font-size: 1.5rem;
   margin-top: 5px;
-  color: var(--accent-green-bright);
+  color: var(--text-main);
 }
 .budget-subtitle{
   text-align: center;
   margin-top: 10px;
+  color: var(--text-muted);
 }
 .form-field {
   display: flex;
@@ -2043,4 +2043,433 @@ body.light-mode .currency-option:hover {
   margin: 5px;
   border: none;
   border-radius: 50%;
+}
+/* AI Chat Container Styling */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 220px);
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 30px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+
+/* Message Row Wrapper */
+.message-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 85%;
+  margin-bottom: 12px;
+  animation: fadeInMessage 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fadeInMessage {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* AI on the Left */
+.message-wrapper.ai-wrapper {
+  align-self: flex-start;
+  flex-direction: row;
+}
+
+/* User on the Right */
+.message-wrapper.user-wrapper {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+/* Avatar Styling */
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.ai-avatar {
+  background: linear-gradient(135deg, #059669, #34D399);
+  color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-avatar {
+  background: #1f2937;
+  border: 1px solid var(--card-border);
+  color: #34D399;
+}
+
+/* Message Bubbles */
+.message {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  word-break: break-word;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.message.user-msg {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #000;
+  font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+
+.message.ai-msg {
+  background-color: var(--input-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  border-bottom-left-radius: 4px;
+}
+
+
+
+/* Typing / Loading Animation Dots */
+.message.loading span {
+  height: 7px;
+  width: 7px;
+  float: left;
+  margin: 0 2px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.3s infinite ease-in-out;
+}
+
+.message.loading span:nth-child(2) { animation-delay: -1.1s; }
+.message.loading span:nth-child(3) { animation-delay: -0.9s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Chat Input Bar Footer */
+.chat-input-area {
+  display: flex;
+  padding: 14px 16px;
+  background-color: rgba(11, 15, 10, 0.95);
+  border-top: 1px solid var(--card-border);
+  gap: 10px;
+  align-items: center;
+}
+
+.chat-input-area input {
+  flex: 1;
+  background-color: var(--input-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  padding: 12px 16px;
+  border-radius: 12px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.chat-input-area input:focus {
+  border-color: #10B981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.chat-input-area button {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #000;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chat-input-area button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.chat-input-area button:active {
+  transform: scale(0.95);
+}
+/* Savings Page Layout */
+.savings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 20px;
+  animation: fadeInSection 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInSection {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Centered Header Styles with line spacing */
+.savings-header-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.savings-header-center .section-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.savings-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Action Bar for "+ New Goal" button */
+.savings-action-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.primary-btn-sm {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.primary-btn-sm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.primary-btn-sm:active {
+  transform: translateY(0);
+}
+
+/* Goals Container & Premium Cards */
+.goals-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goal-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: slideUpCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpCard {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.goal-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Added spacing between title and amounts */
+}
+
+.goal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.goal-amounts {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.goal-amounts strong {
+  color: var(--accent-green-bright);
+  font-weight: 600;
+}
+
+/* Percentage pill */
+.goal-percentage {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--accent-green-bright);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Progress bar container with breathing room */
+.goal-progress-container {
+  margin: 16px 0;
+}
+
+.goal-progress-bg {
+  width: 100%;
+  height: 8px;
+  background-color: var(--input-bg);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+
+.goal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #059669, #34D399);
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Footer layout */
+.goal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--card-border);
+}
+
+.streak-badge {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.streak-badge strong {
+  color: var(--text-main);
+}
+
+.checkin-trigger-btn {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green-bright);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkin-trigger-btn:hover {
+  background: var(--accent-green);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+#submitCheckinBtn{
+  background: #865cf6;
+  color: white;
+}
+/* Delete Goal Button */
+.goal-delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goal-delete-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Premium Prediction Insight Pill */
+.goal-insight-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px dashed rgba(16, 185, 129, 0.25);
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 14px 0;
+  line-height: 1.4;
+}
+
+.goal-insight-pill i {
+  color: var(--accent-green-bright);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.goal-insight-pill strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Aligning top-right elements */
+.goal-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
