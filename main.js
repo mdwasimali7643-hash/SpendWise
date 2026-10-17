@@ -1266,7 +1266,7 @@ RULES:
   const loadingId = appendMessage("Thinking...", "ai");
 
   try {
-    const API_KEY = "AQ.Ab8RN6IsN51EsMW11TVHyUIPbpi_hQf0-0jyNjM0TuA0KNxwnA"; 
+    const API_KEY = "AQ.Ab8RN6LxsWa9HgADu0-CAYLAz2pAr7jCKl8iw97G_DyfP4CtMA"; 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
