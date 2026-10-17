@@ -21,7 +21,7 @@
   type="image/png"
   href="logo.png"
 >
-<link rel="manifest" href="manifest.json">
+
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -684,6 +684,22 @@
       </span>
 
     </button>
+    
+    
+<button class="nav-btn" id="navAi">
+  <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a4 4 0 0 1 4 4v3h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h1v-3a4 4 0 0 1 4-4h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 11v5h2v-5H9m4 0v5h2v-5h-2z"/>
+  </svg>
+  <span>AI Advisor</span>
+</button>
+
+<button class="nav-btn" id="navSavings">
+  <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M19 10.5V8c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2v1H7c-1.1 0-2 .9-2 2v2.5c0 .83.67 1.5 1.5 1.5H7v2c0 1.1.9 2 2 2h1v1c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-1h1c1.1 0 2-.9 2-2v-2h.5c.83 0 1.5-.67 1.5-1.5zM7 10V8h10v2H7zm10 6h-2v-2h2v2z"/>
+  </svg>
+  <span>Goals</span>
+</button>
+
 
   </nav>
 
@@ -776,13 +792,125 @@
         </p>
 
       </div>
+      
       <div id="budgetAlerts">
         <h3 id="budgetAlertH3"></h3>
         <p id="budgetAlertP"></p>
       </div>
+
     </div>
 
   </div>
+  
+
+<!-- AI Section Container -->
+<div id="aiSection" class="section">
+  <h2 class="section-title">SpendWISE AI Advisor</h2>
+  <div class="chat-container">
+<div id="chatMessages" class="chat-messages">
+  <div class="message-wrapper ai-wrapper">
+    <div class="chat-avatar ai-avatar">
+      <i class="fa-solid fa-robot"></i>
+    </div>
+    <div class="message ai-msg">
+      Hello! I'm your SpendWISE AI assistant. Ask me anything about your spending or how to save money!
+    </div>
+  </div>
+</div>
+
+    <div class="chat-input-area">
+      <input type="text" id="aiInput" placeholder="Ask about your budget, e.g., 'How can I save more on food?'">
+      <button id="aiSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================
+     SAVINGS GOALS SECTION
+========================== -->
+<div id="savingsSection" class="section">
+  <div class="savings-page">
+    
+    <!-- Centered Header & Subtitle -->
+    <div class="savings-header-center">
+      <h2 class="section-title">Savings Goals</h2>
+      <p class="savings-subtitle">Build your future, one day at a time</p>
+    </div>
+
+    <!-- "+ New Goal" Button Positioned Underneath Header, Right-aligned -->
+    <div class="savings-action-bar">
+      <button id="openGoalModalBtn" class="primary-btn-sm">
+        <i class="fa-solid fa-plus"></i> New Goal
+      </button>
+    </div>
+
+    <!-- Active Savings Goal Cards -->
+    <div id="goalsContainer" class="goals-container">
+      <!-- Dynamic goals will be injected here by JS -->
+    </div>
+
+  </div>
+</div>
+
+
+<!-- =========================
+     NEW GOAL MODAL
+========================== -->
+<div id="goalModal" class="budget-modal">
+  <div class="budget-modal-card">
+    <h2>Create Savings Goal</h2>
+    
+    <div class="form-field">
+      <label for="goalTitle">Goal Name (e.g. Mobile)</label>
+      <input type="text" id="goalTitle" placeholder="e.g. New Phone">
+    </div>
+
+    <div class="form-field">
+      <label for="goalTargetAmount">Target Amount</label>
+      <input type="number" id="goalTargetAmount" placeholder="e.g. 15000">
+    </div>
+
+    <div class="form-field">
+      <label>Suggested Daily Target</label>
+      <div class="type-toggle" id="dailyPresetToggle">
+        <button type="button" data-value="100">₹100/day</button>
+        <button type="button" data-value="300" class="on">₹300/day</button>
+        <button type="button" data-value="500">₹500/day</button>
+      </div>
+      <input type="number" id="goalDailyTarget" placeholder="Custom daily target" style="margin-top: 8px;">
+    </div>
+
+    <div class="budget-modal-buttons">
+      <button id="saveGoalBtn">Create Goal <i class="fa-solid fa-circle-check"></i></button>
+      <button id="cancelGoalBtn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================
+     DAILY CHECK-IN MODAL
+========================== -->
+<div id="checkinModal" class="budget-modal">
+  <div class="budget-modal-card">
+    <h2>Did you save today?</h2>
+    <p id="checkinGoalName" style="color: var(--text-muted); margin-bottom: 16px;"></p>
+    
+    <div class="form-field" id="checkinAmountWrapper" style="display:none;">
+      <label for="checkinAmount">How much did you save?</label>
+      <input type="number" id="checkinAmount" placeholder="Enter amount">
+    </div>
+
+    <div class="budget-modal-buttons" id="checkinInitialBtns">
+      <button id="checkinNoBtn" style="background-color: #ef4444; color: #fff;">No</button>
+      <button id="checkinYesBtn" style="background-color: var(--accent-green); color: #000;">Yes!</button>
+    </div>
+
+    <div class="budget-modal-buttons" id="checkinSubmitBtns" style="display:none;">
+      <button id="submitCheckinBtn">Confirm & Save <i class="fa-solid fa-circle-check"></i></button>
+      <button id="cancelCheckinBtn" style="background: transparent; border: 1px solid var(--card-border);">Back</button>
+    </div>
+  </div>
+</div>
 
 
   <!-- =========================
@@ -1118,7 +1246,7 @@
       <div class="profile-card about-card">
 
         <div class="about-logo">
-            <img src="logo.png" height="60px" width="60px" id="icon">
+          <img src="logo.png" height="60px" width="60px" id="icon">
         </div>
 <br>
         <p>
