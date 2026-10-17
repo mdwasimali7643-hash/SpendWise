@@ -2473,3 +2473,39 @@ body.light-mode .currency-option:hover {
   align-items: center;
   gap: 8px;
 }
+/* Completed Goal Card Modifier */
+.goal-card.completed {
+  border: 1px solid var(--accent-green);
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.08), var(--card-bg));
+  box-shadow: 0 12px 35px rgba(16, 185, 129, 0.18);
+}
+
+.goal-completed-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-green-bright);
+  margin: 8px 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.3px;
+}
+
+.goal-completed-text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.goal-completed-footer {
+  font-size: 0.88rem;
+  color: var(--text-main);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--card-border);
+}
