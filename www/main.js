@@ -1456,51 +1456,92 @@ function renderGoals() {
   goalsContainer.innerHTML = "";
 
   savingsGoals.forEach((goal) => {
+    const isCompleted = goal.savedAmount >= goal.targetAmount;
     const percentage = Math.min(100, (goal.savedAmount / goal.targetAmount) * 100).toFixed(1);
     
-    // Calculate days remaining based on daily target
-    const remainingAmount = Math.max(0, goal.targetAmount - goal.savedAmount);
-    const dailyPace = goal.dailyTarget || 100;
-    const estimatedDays = remainingAmount > 0 ? Math.ceil(remainingAmount / dailyPace) : 0;
+    // Calculate total days taken from creation date to completion/current date
+    const createdDate = new Date(goal.createdAt || Date.now());
+    const currentDate = new Date();
+    const diffTime = Math.abs(currentDate - createdDate);
+    const totalDaysTaken = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
 
     const card = document.createElement("div");
-    card.className = "goal-card";
+    card.className = isCompleted ? "goal-card completed" : "goal-card";
 
-    card.innerHTML = `
-      <div class="goal-top">
-        <div class="goal-title-wrapper">
-          <h3 class="goal-title">${goal.title}</h3>
-          <span class="goal-amounts">Saved: <strong>${formatMoney(goal.savedAmount)}</strong> / ${formatMoney(goal.targetAmount)}</span>
+    if (isCompleted) {
+      // --- COMPLETED GOAL LAYOUT ---
+      card.innerHTML = `
+        <div class="goal-top">
+          <div class="goal-title-wrapper">
+            <h3 class="goal-title">${goal.title}</h3>
+            <span class="goal-amounts">Achieved: <strong>${formatMoney(goal.savedAmount)}</strong></span>
+          </div>
+          <div class="goal-top-right">
+            <div class="goal-percentage">100%</div>
+            <button class="goal-delete-btn" data-delete-id="${goal.firestoreId}" title="Delete Goal">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
         </div>
-        <div class="goal-top-right">
-          <div class="goal-percentage">${percentage}%</div>
-          <button class="goal-delete-btn" data-delete-id="${goal.firestoreId}" title="Delete Goal">
-            <i class="fa-solid fa-trash-can"></i>
+
+        <h4 class="goal-completed-heading">
+          <i class="fa-solid fa-circle-check"></i> Goal completed!!
+        </h4>
+        <p class="goal-completed-text">
+          Now you can finally buy this or treat yourself to the reward you've worked hard for!
+        </p>
+
+        <div class="goal-progress-container">
+          <div class="goal-progress-bg">
+            <div class="goal-progress-fill" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <div class="goal-completed-footer">
+          <span>It took you <strong>${totalDaysTaken} days</strong> to reach! 🔥</span>
+        </div>
+      `;
+    } else {
+      // --- ACTIVE GOAL LAYOUT ---
+      const remainingAmount = Math.max(0, goal.targetAmount - goal.savedAmount);
+      const dailyPace = goal.dailyTarget || 100;
+      const estimatedDays = remainingAmount > 0 ? Math.ceil(remainingAmount / dailyPace) : 0;
+
+      card.innerHTML = `
+        <div class="goal-top">
+          <div class="goal-title-wrapper">
+            <h3 class="goal-title">${goal.title}</h3>
+            <span class="goal-amounts">Saved: <strong>${formatMoney(goal.savedAmount)}</strong> / ${formatMoney(goal.targetAmount)}</span>
+          </div>
+          <div class="goal-top-right">
+            <div class="goal-percentage">${percentage}%</div>
+            <button class="goal-delete-btn" data-delete-id="${goal.firestoreId}" title="Delete Goal">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="goal-insight-pill">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>At your <strong>${formatMoney(dailyPace)}/day</strong> pace, you need about <strong>${estimatedDays} days</strong> to reach this goal.</span>
+        </div>
+
+        <div class="goal-progress-container">
+          <div class="goal-progress-bg">
+            <div class="goal-progress-fill" style="width: ${percentage}%"></div>
+          </div>
+        </div>
+
+        <div class="goal-footer">
+          <div class="streak-badge">
+            🔥 Streak: <strong>${goal.streak || 0} days</strong>
+          </div>
+          <button class="checkin-trigger-btn" data-id="${goal.firestoreId}">
+            Did you save today?
           </button>
         </div>
-      </div>
-
-      <!-- Smart Prediction Notice -->
-      <div class="goal-insight-pill">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-        <span>At your <strong>${formatMoney(dailyPace)}/day</strong> pace, you need about <strong>${estimatedDays} days</strong> to reach this goal.</span>
-      </div>
-
-      <div class="goal-progress-container">
-        <div class="goal-progress-bg">
-          <div class="goal-progress-fill" style="width: ${percentage}%"></div>
-        </div>
-      </div>
-
-      <div class="goal-footer">
-        <div class="streak-badge">
-          🔥 Streak: <strong>${goal.streak || 0} days</strong>
-        </div>
-        <button class="checkin-trigger-btn" data-id="${goal.firestoreId}">
-          Did you save today?
-        </button>
-      </div>
-    `;
+      `;
+    }
 
     goalsContainer.appendChild(card);
   });
