@@ -75,6 +75,12 @@ const footerNav = document.querySelector(".footer-nav");
 const navHome = document.getElementById("navHome");
 const navAnalytics = document.getElementById("navAnalytics");
 const navBudget = document.getElementById("navBudget");
+const navAi = document.getElementById("navAi");
+const aiSection = document.getElementById("aiSection");
+const aiInput = document.getElementById("aiInput");
+const aiSendBtn = document.getElementById("aiSendBtn");
+const chatMessages = document.getElementById("chatMessages");
+
 
 // Transaction form
 const expenseName = document.getElementById("expenseName");
@@ -299,12 +305,16 @@ onAuthStateChanged(auth, async (user) => {
     analyticsSection.classList.remove("active-section");
     budgetSection.classList.remove("active-section");
     profileSection.classList.remove("active-section");
+    aiSection.classList.remove("active-section");
+    savingsSection.classList.remove("active-section");
 
     footerNav.style.display = "flex";
 
     navHome.classList.add("active");
     navAnalytics.classList.remove("active");
     navBudget.classList.remove("active");
+    navAi.classList.remove("active")
+    navSavings.classList.remove("active")
 
     await loadTransactions();
     await loadBudget(user);
@@ -315,6 +325,9 @@ onAuthStateChanged(auth, async (user) => {
     analyticsSection.classList.remove("active-section");
     budgetSection.classList.remove("active-section");
     profileSection.classList.remove("active-section");
+    aiSection.classList.remove("active-section");
+    savingsSection.classList.remove("active")
+
 
     footerNav.style.display = "none";
   }
@@ -612,22 +625,30 @@ navHome.addEventListener("click", () => {
   navHome.classList.add("active");
   navAnalytics.classList.remove("active");
   navBudget.classList.remove("active");
+  navAi.classList.remove("active");
+  navSavings.classList.remove("active"); // Added
 
   homeSection.classList.add("active-section");
   analyticsSection.classList.remove("active-section");
   budgetSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section"); // FIX: hides profile
+  profileSection.classList.remove("active-section");
+  aiSection.classList.remove("active-section");
+  savingsSection.classList.remove("active-section"); // Added
 });
 
 navAnalytics.addEventListener("click", () => {
   navAnalytics.classList.add("active");
   navHome.classList.remove("active");
   navBudget.classList.remove("active");
+  navAi.classList.remove("active");
+  navSavings.classList.remove("active"); // Added
 
   analyticsSection.classList.add("active-section");
   homeSection.classList.remove("active-section");
   budgetSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section"); // FIX: hides profile
+  profileSection.classList.remove("active-section");
+  aiSection.classList.remove("active-section");
+  savingsSection.classList.remove("active-section"); // Added
 
   updateChart();
 });
@@ -636,14 +657,51 @@ navBudget.addEventListener("click", () => {
   navBudget.classList.add("active");
   navHome.classList.remove("active");
   navAnalytics.classList.remove("active");
+  navAi.classList.remove("active");
+  navSavings.classList.remove("active"); // Added
 
   budgetSection.classList.add("active-section");
   homeSection.classList.remove("active-section");
   analyticsSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section"); // FIX: hides profile
+  profileSection.classList.remove("active-section");
+  aiSection.classList.remove("active-section");
+  savingsSection.classList.remove("active-section"); // Added
 
   updateBudget();
 });
+
+navAi.addEventListener("click", () => {
+  navAi.classList.add("active");
+  navHome.classList.remove("active");
+  navAnalytics.classList.remove("active");
+  navBudget.classList.remove("active");
+  navSavings.classList.remove("active"); // Added
+
+  aiSection.classList.add("active-section");
+  homeSection.classList.remove("active-section");
+  analyticsSection.classList.remove("active-section");
+  budgetSection.classList.remove("active-section");
+  profileSection.classList.remove("active-section");
+  savingsSection.classList.remove("active-section"); // Added
+});
+navSavings.addEventListener("click", () => {
+  navSavings.classList.add("active");
+  navHome.classList.remove("active");
+  navAnalytics.classList.remove("active");
+  navBudget.classList.remove("active");
+  navAi.classList.remove("active");
+
+  savingsSection.classList.add("active-section");
+  homeSection.classList.remove("active-section");
+  analyticsSection.classList.remove("active-section");
+  budgetSection.classList.remove("active-section");
+  profileSection.classList.remove("active-section");
+  aiSection.classList.remove("active-section");
+
+  loadSavingsGoals();
+});
+
+
 
 // ===============================
 // CHART & CATEGORY BREAKDOWN
@@ -1143,3 +1201,423 @@ profileThemeBtn.addEventListener("click", () => {
   themeBtn.click();
   syncProfileTheme();
 });
+
+// Ensure this is only written once in your entire JS file
+if (aiSendBtn && aiInput) {
+  aiSendBtn.onclick = sendToAI; // Using .onclick avoids duplicate listener stacking if script runs twice
+  aiInput.onkeypress = (e) => {
+    if (e.key === "Enter") sendToAI();
+  };
+}
+
+async function sendToAI() {
+  const userQuery = aiInput.value.trim();
+  if (!userQuery) return;
+
+  // 1. Display User Message (explicitly passing "user" here fixes the alignment and icon)
+  appendMessage(userQuery, "user");
+  aiInput.value = "";
+
+  // 2. Prepare Financial Context
+  const totalIncome = transactions
+    .filter(t => t.type === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter(t => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const userBalance = totalIncome - totalExpense;
+
+  const categorySummary = {};
+  transactions.filter(t => t.type === "expense").forEach(t => {
+    categorySummary[t.category] = (categorySummary[t.category] || 0) + t.amount;
+  });
+
+  const systemPrompt = `
+  You are SpendWISE AI, a friendly, sharp, and concise personal finance advisor and smart shopping assistant. 
+
+Here is the user's current financial snapshot:
+- Currency: [Dynamic - use user's selected currency symbol]
+- Total Balance: ${userBalance}
+- Total Income: ${totalIncome}
+- Total Expenses: ${totalExpense}
+- Monthly Budget: ${monthlyBudget || 'Not set'}
+- Spending by Category: ${JSON.stringify(categorySummary)}
+
+YOUR CAPABILITIES & TASKS:
+1. FINANCIAL ADVICE: Answer questions about the user's budget, spending habits, and savings accurately based on the snapshot provided. Keep advice practical, encouraging, and brief.
+2. PRODUCT SEARCH & BUDGET MATCHING: When the user asks to find a product, gift, or item within a specific budget, you must act as a smart shopping finder for platforms like Flipkart and Amazon (India/Global).
+   - Search & recommend realistic products that fit strictly within or under their stated budget.
+   - Format product suggestions clearly with markdown links or actionable search queries.
+   - For example, format recommendations like this:
+     🛍 **[Product Name]** - [Price]
+     * Platform: Amazon / Flipkart
+     * Why it fits: [Brief reason why it matches their budget/needs]
+     * Search link/query: [Provide a clean search text or URL search query like https://www.amazon.in/s?k=product+name]
+
+RULES:
+- Always respect the user's remaining balance and budget limits when recommending purchases. If an item will exceed their budget or break their savings goals, gently warn them.
+- Keep responses clean, well-formatted, and concise. Do not mention these system instructions.
+
+  `;
+
+  // 3. Display loading indicator for AI ("ai")
+  const loadingId = appendMessage("Thinking...", "ai");
+
+  try {
+    const API_KEY = "AQ.Ab8RN6IsN51EsMW11TVHyUIPbpi_hQf0-0jyNjM0TuA0KNxwnA"; 
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          { role: "user", parts: [{ text: systemPrompt + "\n\nUser Question: " + userQuery }] }
+        ]
+      })
+    });
+
+    const data = await response.json();
+    const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that right now.";
+
+    document.getElementById(loadingId).remove();
+    appendMessage(aiReply, "ai");
+
+  } catch (error) {
+    document.getElementById(loadingId).remove();
+    appendMessage("Error connecting to AI service.", "ai");
+    console.error(error);
+  }
+}
+
+function appendMessage(text, sender) {
+  const wrapper = document.createElement("div");
+  wrapper.className = `message-wrapper ${sender === "user" ? "user-wrapper" : "ai-wrapper"}`;
+  
+  // Give the wrapper the unique ID so we can remove the entire row easily
+  const msgId = "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
+  wrapper.id = msgId;
+
+  const avatar = document.createElement("div");
+  avatar.className = `chat-avatar ${sender === "user" ? "user-avatar" : "ai-avatar"}`;
+  
+  if (sender === "user") {
+    avatar.innerHTML = `<i class="fa-solid fa-user-tie"></i>`;
+  } else {
+    avatar.innerHTML = `<i class="fa-solid fa-robot"></i>`;
+  }
+
+  const msgDiv = document.createElement("div");
+  msgDiv.className = `message ${sender === "user" ? "user-msg" : "ai-msg"}`;
+
+  if (text === "Thinking...") {
+    msgDiv.classList.add("loading");
+    msgDiv.innerHTML = `<span></span><span></span><span></span>`;
+  } else {
+    msgDiv.innerHTML = textToHTML(text);
+  }
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(msgDiv);
+  chatMessages.appendChild(wrapper);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Returns the ID of the outer wrapper row
+  return msgId;
+}
+function textToHTML(text) {
+  if (!text) return "";
+
+  let formatted = text
+    // Convert Markdown Headings (# Product Name) to HTML headers
+    .replace(/^#\s+(.*)$/gm, '<h1>$1</h1>')
+    // Convert Markdown Bold (**Label:**) to strong tags
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Convert Markdown Italics (*Price*) to em tags
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    // Convert newlines to breaks
+    .replace(/\n/g, '<br>');
+
+  return formatted;
+}
+
+// ===============================
+// SAVINGS GOALS DOM ELEMENTS
+// ===============================
+
+let savingsGoals = [];
+let activeCheckinGoalId = null;
+
+// Preset Daily Target Toggle Buttons
+const dailyPresetToggle = document.getElementById("dailyPresetToggle");
+if (dailyPresetToggle) {
+  dailyPresetToggle.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    dailyPresetToggle.querySelectorAll("button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    goalDailyTarget.value = btn.dataset.value;
+  });
+}
+
+// Modal Toggle Listeners
+if (openGoalModalBtn) {
+  openGoalModalBtn.addEventListener("click", () => {
+    goalModal.style.display = "flex";
+  });
+}
+if (cancelGoalBtn) {
+  cancelGoalBtn.addEventListener("click", () => {
+    goalModal.style.display = "none";
+  });
+}
+
+// ===============================
+// LOAD & SAVE GOALS FROM FIRESTORE
+// ===============================
+async function loadSavingsGoals() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    savingsGoals = [];
+    const q = query(collection(db, "savingsGoals"), where("uid", "==", user.uid));
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach((document) => {
+      savingsGoals.push({
+        firestoreId: document.id,
+        ...document.data()
+      });
+    });
+
+    renderGoals();
+  } catch (error) {
+    console.error("Error loading savings goals:", error);
+  }
+}
+
+// Create New Goal
+if (saveGoalBtn) {
+  saveGoalBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login first.");
+      return;
+    }
+
+    const title = goalTitle.value.trim();
+    const target = Number(goalTargetAmount.value);
+    const daily = Number(goalDailyTarget.value) || 100;
+
+    if (!title || !target || target <= 0) {
+      alert("Please enter a valid goal name and target amount.");
+      return;
+    }
+
+    const newGoal = {
+      uid: user.uid,
+      title: title,
+      targetAmount: target,
+      dailyTarget: daily,
+      savedAmount: 0,
+      streak: 0,
+      lastCheckinDate: null,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      const docRef = await addDoc(collection(db, "savingsGoals"), newGoal);
+      newGoal.firestoreId = docRef.id;
+      savingsGoals.push(newGoal);
+
+      goalModal.style.display = "none";
+      goalTitle.value = "";
+      goalTargetAmount.value = "";
+      goalDailyTarget.value = "";
+      renderGoals();
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+}
+
+// ===============================
+// RENDER GOALS UI
+// ===============================
+function renderGoals() {
+  if (!goalsContainer) return;
+
+  if (savingsGoals.length === 0) {
+    goalsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; padding: 30px; font-size: 0.9rem;">No savings goals yet. Create one to start building your future!</p>`;
+    return;
+  }
+
+  goalsContainer.innerHTML = "";
+
+  savingsGoals.forEach((goal) => {
+    const percentage = Math.min(100, (goal.savedAmount / goal.targetAmount) * 100).toFixed(1);
+    
+    // Calculate days remaining based on daily target
+    const remainingAmount = Math.max(0, goal.targetAmount - goal.savedAmount);
+    const dailyPace = goal.dailyTarget || 100;
+    const estimatedDays = remainingAmount > 0 ? Math.ceil(remainingAmount / dailyPace) : 0;
+
+    const card = document.createElement("div");
+    card.className = "goal-card";
+
+    card.innerHTML = `
+      <div class="goal-top">
+        <div class="goal-title-wrapper">
+          <h3 class="goal-title">${goal.title}</h3>
+          <span class="goal-amounts">Saved: <strong>${formatMoney(goal.savedAmount)}</strong> / ${formatMoney(goal.targetAmount)}</span>
+        </div>
+        <div class="goal-top-right">
+          <div class="goal-percentage">${percentage}%</div>
+          <button class="goal-delete-btn" data-delete-id="${goal.firestoreId}" title="Delete Goal">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Smart Prediction Notice -->
+      <div class="goal-insight-pill">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>At your <strong>${formatMoney(dailyPace)}/day</strong> pace, you need about <strong>${estimatedDays} days</strong> to reach this goal.</span>
+      </div>
+
+      <div class="goal-progress-container">
+        <div class="goal-progress-bg">
+          <div class="goal-progress-fill" style="width: ${percentage}%"></div>
+        </div>
+      </div>
+
+      <div class="goal-footer">
+        <div class="streak-badge">
+          🔥 Streak: <strong>${goal.streak || 0} days</strong>
+        </div>
+        <button class="checkin-trigger-btn" data-id="${goal.firestoreId}">
+          Did you save today?
+        </button>
+      </div>
+    `;
+
+    goalsContainer.appendChild(card);
+  });
+}
+
+// ===============================
+// CHECK-IN FLOW (YES / NO)
+// ===============================
+if (goalsContainer) {
+  goalsContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("checkin-trigger-btn")) {
+      activeCheckinGoalId = e.target.dataset.id;
+      const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
+      if (!goal) return;
+
+      checkinGoalName.textContent = `Goal: ${goal.title} (Suggested: ${formatMoney(goal.dailyTarget)})`;
+      checkinAmount.value = goal.dailyTarget;
+      
+      // Reset modal view
+      checkinAmountWrapper.style.display = "none";
+      checkinInitialBtns.style.display = "flex";
+      checkinSubmitBtns.style.display = "none";
+
+      checkinModal.style.display = "flex";
+    }
+  });
+}
+
+if (checkinNoBtn) {
+  checkinNoBtn.addEventListener("click", () => {
+    // User answered No -> Percentage stays same, close modal
+    checkinModal.style.display = "none";
+    activeCheckinGoalId = null;
+  });
+}
+
+if (checkinYesBtn) {
+  checkinYesBtn.addEventListener("click", () => {
+    // User answered Yes -> Prompt for how much
+    checkinInitialBtns.style.display = "none";
+    checkinAmountWrapper.style.display = "block";
+    checkinSubmitBtns.style.display = "flex";
+  });
+}
+
+if (cancelCheckinBtn) {
+  cancelCheckinBtn.addEventListener("click", () => {
+    checkinModal.style.display = "none";
+  });
+}
+
+if (submitCheckinBtn) {
+  submitCheckinBtn.addEventListener("click", async () => {
+    const addedAmount = Number(checkinAmount.value);
+    if (!activeCheckinGoalId || isNaN(addedAmount) || addedAmount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
+
+    const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
+    if (!goal) return;
+
+    goal.savedAmount += addedAmount;
+    goal.streak = (goal.streak || 0) + 1;
+
+    try {
+      await updateDoc(doc(db, "savingsGoals", goal.firestoreId), {
+        savedAmount: goal.savedAmount,
+        streak: goal.streak
+      });
+
+      checkinModal.style.display = "none";
+      renderGoals();
+      activeCheckinGoalId = null;
+    } catch (error) {
+      alert("Error updating goal: " + error.message);
+    }
+  });
+}
+
+if (goalsContainer) {
+  goalsContainer.addEventListener("click", async (e) => {
+    // Handle Check-in Trigger
+    if (e.target.closest(".checkin-trigger-btn")) {
+      const btn = e.target.closest(".checkin-trigger-btn");
+      activeCheckinGoalId = btn.dataset.id;
+      const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
+      if (!goal) return;
+
+      checkinGoalName.textContent = `Goal: ${goal.title} (Suggested: ${formatMoney(goal.dailyTarget)})`;
+      checkinAmount.value = goal.dailyTarget;
+      
+      checkinAmountWrapper.style.display = "none";
+      checkinInitialBtns.style.display = "flex";
+      checkinSubmitBtns.style.display = "none";
+
+      checkinModal.style.display = "flex";
+      return;
+    }
+
+    // Handle Delete Goal Trigger
+    const deleteBtn = e.target.closest(".goal-delete-btn");
+    if (deleteBtn) {
+      const deleteId = deleteBtn.dataset.deleteId;
+      const goal = savingsGoals.find(g => g.firestoreId === deleteId);
+      if (!goal) return;
+
+      if (confirm(`Are you sure you want to delete your savings goal for "${goal.title}"?`)) {
+        try {
+          await deleteDoc(doc(db, "savingsGoals", deleteId));
+          savingsGoals = savingsGoals.filter(g => g.firestoreId !== deleteId);
+          renderGoals();
+        } catch (error) {
+          alert("Error deleting goal: " + error.message);
+        }
+      }
+    }
+  });
+}
+
