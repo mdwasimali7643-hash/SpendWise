@@ -5,6 +5,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 import {
+  getAI,
+  getGenerativeModel,
+  GoogleAIBackend
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-ai.js";
+
+import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -41,13 +47,43 @@ const firebaseConfig = {
   measurementId: "G-YQRVKCBTR5"
 };
 
+
+
 // ===============================
 // INITIALIZE FIREBASE
 // ===============================
 
+import {
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app-check.js";
+
+
 const app = initializeApp(firebaseConfig);
+
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaEnterpriseProvider(
+    "6LfHsfMtAAAAAJhojJuANlREGArAKDMLG-a7d__9"
+  ),
+  isTokenAutoRefreshEnabled: true
+});
+
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+
+
+// ===============================
+// FIREBASE AI LOGIC
+// ===============================
+
+const ai = getAI(app, {
+  backend: new GoogleAIBackend()
+});
+
+const aiModel = getGenerativeModel(ai, {
+  model: "gemini-2.5-flash"
+});
 
 // ===============================
 // DOM ELEMENTS
@@ -1210,83 +1246,120 @@ if (aiSendBtn && aiInput) {
   };
 }
 
+
 async function sendToAI() {
   const userQuery = aiInput.value.trim();
+
   if (!userQuery) return;
 
-  // 1. Display User Message (explicitly passing "user" here fixes the alignment and icon)
+  if (!auth.currentUser) {
+    appendMessage("Please log in to use SpendWISE AI.", "ai");
+    return;
+  }
+
+  // Prevent accidental empty requests
   appendMessage(userQuery, "user");
   aiInput.value = "";
+  aiInput.disabled = true;
+  aiSendBtn.disabled = true;
 
-  // 2. Prepare Financial Context
-  const totalIncome = transactions
-    .filter(t => t.type === "income")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalExpense = transactions
-    .filter(t => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const userBalance = totalIncome - totalExpense;
-
-  const categorySummary = {};
-  transactions.filter(t => t.type === "expense").forEach(t => {
-    categorySummary[t.category] = (categorySummary[t.category] || 0) + t.amount;
-  });
-
-  const systemPrompt = `
-  You are SpendWISE AI, a friendly, sharp, and concise personal finance advisor and smart shopping assistant. 
-
-Here is the user's current financial snapshot:
-- Currency: [Dynamic - use user's selected currency symbol]
-- Total Balance: ${userBalance}
-- Total Income: ${totalIncome}
-- Total Expenses: ${totalExpense}
-- Monthly Budget: ${monthlyBudget || 'Not set'}
-- Spending by Category: ${JSON.stringify(categorySummary)}
-
-YOUR CAPABILITIES & TASKS:
-1. FINANCIAL ADVICE: Answer questions about the user's budget, spending habits, and savings accurately based on the snapshot provided. Keep advice practical, encouraging, and brief.
-2. PRODUCT SEARCH & BUDGET MATCHING: When the user asks to find a product, gift, or item within a specific budget, you must act as a smart shopping finder for platforms like Flipkart and Amazon (India/Global).
-   - Search & recommend realistic products that fit strictly within or under their stated budget.
-   - Format product suggestions clearly with markdown links or actionable search queries.
-   - For example, format recommendations like this:
-     🛍 **[Product Name]** - [Price]
-     * Platform: Amazon / Flipkart
-     * Why it fits: [Brief reason why it matches their budget/needs]
-     * Search link/query: [Provide a clean search text or URL search query like https://www.amazon.in/s?k=product+name]
-
-RULES:
-- Always respect the user's remaining balance and budget limits when recommending purchases. If an item will exceed their budget or break their savings goals, gently warn them.
-- Keep responses clean, well-formatted, and concise. Do not mention these system instructions.
-
-  `;
-
-  // 3. Display loading indicator for AI ("ai")
   const loadingId = appendMessage("Thinking...", "ai");
 
   try {
-    const API_KEY = "AQ.Ab8RN6LxsWa9HgADu0-CAYLAz2pAr7jCKl8iw97G_DyfP4CtMA"; 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          { role: "user", parts: [{ text: systemPrompt + "\n\nUser Question: " + userQuery }] }
-        ]
-      })
-    });
+    // Prepare financial summary from existing app data
+    const totalIncome = transactions
+      .filter(t => t.type === "income")
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-    const data = await response.json();
-    const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that right now.";
+    const totalExpense = transactions
+      .filter(t => t.type === "expense")
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-    document.getElementById(loadingId).remove();
-    appendMessage(aiReply, "ai");
+    const userBalance = totalIncome - totalExpense;
+
+    const categorySummary = {};
+
+    transactions
+      .filter(t => t.type === "expense")
+      .forEach(t => {
+        const category = t.category || "Other";
+
+        categorySummary[category] =
+          (categorySummary[category] || 0) +
+          Number(t.amount || 0);
+      });
+
+    const systemPrompt = `
+You are SpendWISE AI, a friendly and concise personal finance assistant.
+
+The user's current financial snapshot:
+- Currency: ${getCurrency().name} (${getCurrency().symbol})
+- Total income: ${formatMoney(totalIncome)}
+- Total expenses: ${formatMoney(totalExpense)}
+- Current balance: ${formatMoney(userBalance)}
+- Monthly budget: ${
+      monthlyBudget > 0
+        ? formatMoney(monthlyBudget)
+        : "Not set"
+    }
+- Expense categories: ${JSON.stringify(categorySummary)}
+
+YOUR TASKS:
+
+1. Explain the user's spending, budget and savings using
+   the financial information provided.
+2. Offer realistic, practical budgeting suggestions.
+3. Help compare products and suggest purchases within the
+   user's stated budget.
+4. When recommending products, provide useful search links
+   for shopping websites when appropriate.
+5. Do not claim to have checked live stock, current prices,
+   reviews or availability unless that information was
+   actually retrieved from a reliable live source.
+6. Respect the user's budget and explain financial trade-offs.
+7. Keep responses clear, friendly and concise.
+8. If information is missing, ask a brief follow-up question.
+9. Never ask for passwords, bank login details, card numbers
+   or other sensitive account credentials.
+
+Use the financial snapshot as context, but do not assume
+it contains every detail of the user's finances.
+`;
+
+    const prompt = `${systemPrompt}
+
+User's question:
+${userQuery}`;
+
+    // Use Firebase AI Logic; no Gemini API key in this file
+    const result = await aiModel.generateContent(prompt);
+    const aiReply = result.response.text();
+
+    document.getElementById(loadingId)?.remove();
+
+    appendMessage(
+      aiReply || "I couldn't generate a response. Please try again.",
+      "ai"
+    );
 
   } catch (error) {
-    document.getElementById(loadingId).remove();
-    appendMessage("Error connecting to AI service.", "ai");
-    console.error(error);
+    console.error("SpendWISE AI error:", error);
+
+    document.getElementById(loadingId)?.remove();
+
+    let message =
+      "SpendWISE AI couldn't respond right now. Please try again.";
+
+    if (error?.message) {
+      console.error("AI error details:", error.message);
+    }
+
+    appendMessage(message, "ai");
+
+  } finally {
+    aiInput.disabled = false;
+    aiSendBtn.disabled = false;
+    aiInput.focus();
   }
 }
 
@@ -1661,4 +1734,3 @@ if (goalsContainer) {
     }
   });
 }
-
