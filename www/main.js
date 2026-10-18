@@ -58,6 +58,10 @@ import {
   ReCaptchaEnterpriseProvider
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app-check.js";
 
+if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
 
 const app = initializeApp(firebaseConfig);
 
@@ -82,7 +86,7 @@ const ai = getAI(app, {
 });
 
 const aiModel = getGenerativeModel(ai, {
-  model: "gemini-2.5-flash"
+  model: "gemini-3.8-flash"
 });
 
 // ===============================
@@ -1734,3 +1738,4 @@ if (goalsContainer) {
     }
   });
 }
+
