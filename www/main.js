@@ -234,6 +234,44 @@ let selectedTransactionForDetail = null;
 let chartInstance = null;
 const transactions = [];
 
+
+function clearUserData() {
+  // Clear data arrays
+  transactions.length = 0;
+  savingsGoals.length = 0;
+  categoryBudgets = {};
+  monthlyBudget = 0;
+
+  // Clear UI elements so they never bleed into another account
+  if (expenseList) expenseList.innerHTML = "";
+  if (goalsContainer) goalsContainer.innerHTML = "";
+  if (categoryBudgetContainer) categoryBudgetContainer.innerHTML = "";
+  
+  // Reset AI chat back to default greeting only
+  if (chatMessages) {
+    chatMessages.innerHTML = `
+      <div class="message-wrapper ai-wrapper">
+        <div class="chat-avatar ai-avatar">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="message ai-msg">
+          Hello! I'm your SpendWISE AI assistant. Ask me anything about your spending or how to save money! 💡
+        </div>
+      </div>
+    `;
+  }
+
+  // Reset summary indicators
+  if (incomeDisplay) incomeDisplay.textContent = "₹0";
+  if (expenseDisplay) expenseDisplay.textContent = "₹0";
+  if (total) total.textContent = "₹0";
+  if (budgetAmount) budgetAmount.textContent = "₹0";
+  if (budgetSpent) budgetSpent.textContent = "₹0";
+  if (budgetRemaining) budgetRemaining.textContent = "₹0";
+  if (budgetProgress) budgetProgress.style.width = "0%";
+}
+
+
 // Auth
 signupBtn.addEventListener("click", async () => {
   if (!email.value.trim() || !password.value) return alert("Enter email and password.");
@@ -253,12 +291,20 @@ loginBtn.addEventListener("click", async () => {
 });
 
 logoutBtn.addEventListener("click", async () => {
-  try { await signOut(auth); transactions.length = 0; } catch (error) { alert(error.message); }
+  try {
+    await signOut(auth);
+    clearUserData(); // Reset everything instantly
+  } catch (error) { alert(error.message); }
 });
+
+profileLogoutBtn.addEventListener("click", () => logoutBtn.click());
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    authSection.style.display = "none";
+    // Clear old data first when any user session initializes
+    clearUserData();
+
+    authSection.classList.remove("show-auth");
     homeSection.classList.add("active-section");
     analyticsSection.classList.remove("active-section");
     budgetSection.classList.remove("active-section");
@@ -266,8 +312,6 @@ onAuthStateChanged(auth, async (user) => {
     aiSection.classList.remove("active-section");
     savingsSection.classList.remove("active-section");
     
-    // Show footer nav cleanly
-    footerNav.style.display = "flex";
     footerNav.classList.add("show-nav");
 
     navHome.classList.add("active");
@@ -279,8 +323,10 @@ onAuthStateChanged(auth, async (user) => {
     await loadTransactions();
     await loadBudget(user);
     await loadCategoryBudgets(user);
+    await loadSavingsGoals();
   } else {
-    authSection.style.display = "flex";
+    clearUserData(); // Clear everything on logout
+    authSection.classList.add("show-auth");
     homeSection.classList.remove("active-section");
     analyticsSection.classList.remove("active-section");
     budgetSection.classList.remove("active-section");
@@ -288,7 +334,6 @@ onAuthStateChanged(auth, async (user) => {
     aiSection.classList.remove("active-section");
     savingsSection.classList.remove("active-section");
     
-    footerNav.style.display = "none";
     footerNav.classList.remove("show-nav");
   }
 });
