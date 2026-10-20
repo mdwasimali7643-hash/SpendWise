@@ -265,7 +265,11 @@ onAuthStateChanged(auth, async (user) => {
     profileSection.classList.remove("active-section");
     aiSection.classList.remove("active-section");
     savingsSection.classList.remove("active-section");
+    
+    // Show footer nav cleanly
     footerNav.style.display = "flex";
+    footerNav.classList.add("show-nav");
+
     navHome.classList.add("active");
     navAnalytics.classList.remove("active");
     navBudget.classList.remove("active");
@@ -283,9 +287,12 @@ onAuthStateChanged(auth, async (user) => {
     profileSection.classList.remove("active-section");
     aiSection.classList.remove("active-section");
     savingsSection.classList.remove("active-section");
+    
     footerNav.style.display = "none";
+    footerNav.classList.remove("show-nav");
   }
 });
+
 
 // Transactions Modal Binding
 if (openTransactionModal) openTransactionModal.addEventListener("click", () => transactionModal.classList.add("show"));
