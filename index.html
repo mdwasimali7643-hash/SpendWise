@@ -8,1436 +8,562 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>SpendWISE — Smart Expense Tracker</title>
-
-<meta
-  name="description"
-  content="SpendWISE is a simple and smart expense tracker for managing your income, expenses, and budget."
->
-
-<meta name="theme-color" content="#0b0f0a">
-<link
-  rel="icon"
-  type="image/png"
-  href="logo.png"
->
-
+  <title>SpendWISE — Smart Expense Tracker</title>
+  <meta name="description" content="SpendWISE is a simple and smart expense tracker for managing your income, expenses, and budget.">
+  <meta name="theme-color" content="#0b0f0a">
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- =========================
-       AUTH SECTION
-  ========================== -->
-
-  <div id="authSection">
-
+  <!-- AUTH SECTION -->
+  <div id="authSection" class="auth-wrapper">
     <div class="auth-card">
-
       <div class="brand">
-     
         <h1>Spend<span>WISE</span></h1>
       </div>
-
-      <p class="auth-subtitle">
-        Take control of your money.
-      </p>
-
+      <p class="auth-subtitle">Take control of your money with style.</p>
       <div class="auth-form">
-
-        <div class="input-group">
+        <div class="form-field">
           <label for="email">Email</label>
-
-          <input
-            type="email"
-            id="email"
-            placeholder="you@example.com"
-          >
+          <input type="email" id="email" placeholder="you@example.com">
         </div>
-
-        <div class="input-group">
+        <div class="form-field">
           <label for="password">Password</label>
-
-          <input
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-          >
+          <input type="password" id="password" placeholder="Enter your password">
         </div>
-
-        <button id="loginBtn" class="primary-btn">
-          Login
-          <span>→</span>
-        </button>
-
-        <div class="divider">
-          <span>or</span>
-        </div>
-
-        <button id="signupBtn" class="secondary-btn">
-          Create Account
-        </button>
-
+        <button id="loginBtn" class="primary-btn">Login <span>→</span></button>
+        <div class="divider"><span>or</span></div>
+        <button id="signupBtn" class="secondary-btn">Create Account</button>
       </div>
-
-      <p class="security-text">
-        🔒 Your financial data stays private and secure.
-      </p>
-
+      <p class="security-text">🔒 Your financial data stays private and secure.</p>
     </div>
-
   </div>
 
-
-  <!-- =========================
-       HOME SECTION
-  ========================== -->
-
+  <!-- HOME SECTION -->
   <div id="homeSection" class="section">
-
-    <!-- HEADER -->
-
     <header class="app-header">
-
-      <!-- Hamburger -->
-
-      <button
-        id="menuBtn"
-        class="menu-btn"
-        aria-label="Open menu"
-      >
+      <button id="menuBtn" class="menu-btn" aria-label="Open menu">
         <i class="fa-solid fa-bars"></i>
       </button>
-
-
-      <!-- App Logo -->
-
-      <h1 class="app-title">
-        Spend<span>WISE</span>
-      </h1>
-
-
-      <!-- Spacer -->
-
+      <h1 class="app-title">Spend<span>WISE</span></h1>
       <div class="header-spacer"></div>
 
-
-      <!-- Header Dropdown Menu -->
-
       <div id="headerMenu" class="header-menu">
-
-        <!-- Profile -->
-
         <button id="profileBtn" class="menu-item">
-
           <i class="fa-solid fa-user"></i>
-
           <span>Profile</span>
-
         </button>
-
-
-        <!-- Theme -->
-
         <button id="themeBtn" class="menu-item">
-
-          <i
-            id="themeIcon"
-            class="fa-solid fa-moon"
-          ></i>
-
-          <span id="themeText">
-            Dark Mode
-          </span>
-
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+          <span id="themeText">Dark Mode</span>
         </button>
-
-
-        <!-- Logout -->
-
-        <button
-          id="logoutBtn"
-          class="menu-item logout-item"
-        >
-
+        <button id="logoutBtn" class="menu-item logout-item">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
-
           <span>Log Out</span>
-
         </button>
-
       </div>
-
     </header>
 
-
-    <!-- =========================
-         ADD TRANSACTION FAB
-    ========================== -->
-
-    <button
-      id="openTransactionModal"
-      class="add-fab"
-      aria-label="Add transaction"
-    >
-
+    <!-- ADD TRANSACTION FAB -->
+    <button id="openTransactionModal" class="add-fab" aria-label="Add transaction">
       <span>+</span>
-
     </button>
 
-
-    <!-- =========================
-         BALANCE
-    ========================== -->
-
+    <!-- BALANCE CARD -->
     <div class="balance-card">
-
       <p>Total Balance</p>
-
-      <h1 id="balance">
-        
-      </h1>
-
+      <h1 id="balance"></h1>
     </div>
 
-
-    <!-- =========================
-         INCOME / EXPENSE
-    ========================== -->
-
+    <!-- INCOME / EXPENSE SUMMARY -->
     <div class="summary">
-
       <div class="income-card">
-
         <p>Income</p>
-
-        <h2 id="income">
-          
-        </h2>
-
+        <h2 id="income"></h2>
       </div>
-
-
       <div class="expense-card">
-
         <p>Expense</p>
-
-        <h2 id="expense">
-          
-        </h2>
-
+        <h2 id="expense"></h2>
       </div>
-
     </div>
 
-
-    <!-- =========================
-         ADD TRANSACTION MODAL
-    ========================== -->
-
-    <div
-      id="transactionModal"
-      class="transaction-modal"
-    >
-
+    <!-- ADD TRANSACTION MODAL -->
+    <div id="transactionModal" class="transaction-modal">
       <div class="transaction-modal-card">
-
-        <div class="transaction-modal-header">
-
+        <div class="transaction-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
           <div>
-
-            <h2>
-              Add Transaction
-            </h2>
-
-            <p>
-              Record your income or expense
-            </p>
-
+            <h2>Add Transaction</h2>
+            <p style="margin: 0; text-align: left !important;">Record your income or expense</p>
           </div>
-
-
-          <button
-            id="closeTransactionModal"
-            class="modal-close"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
+          <button id="closeTransactionModal" class="modal-close" style="background:transparent; border:none; font-size:24px; color:var(--text-main); cursor:pointer;">×</button>
         </div>
-
 
         <div id="inputContainer">
-
           <div id="inputForm">
-
             <div class="form-field">
-
-              <label for="expenseName">
-                Transaction
-              </label>
-
-              <input
-                type="text"
-                id="expenseName"
-                placeholder="e.g. Gym membership"
-              >
-
+              <label for="expenseName">Transaction Title</label>
+              <input type="text" id="expenseName" placeholder="e.g. Grocery shopping">
             </div>
-
-
             <div class="form-field">
-
-              <label for="expenseAmount">
-                Amount
-              </label>
-
-              <input
-                type="number"
-                id="expenseAmount"
-                placeholder="₹ 0"
-              >
-
+              <label for="expenseAmount">Amount</label>
+              <input type="number" id="expenseAmount" placeholder="0">
             </div>
-
+            <div class="form-field">
+              <label for="expenseNote">Note (Optional)</label>
+              <input type="text" id="expenseNote" placeholder="Add a brief note...">
+            </div>
           </div>
-
 
           <div id="typeForm">
-
-            <label>
-              Type
-            </label>
-
-
-            <div
-              class="type-toggle"
-              id="typeToggle"
-            >
-
-              <button
-                type="button"
-                data-value="expense"
-                class="on"
-              >
-                Expense
-              </button>
-
-              <button
-                type="button"
-                data-value="income"
-              >
-                Income
-              </button>
-
+            <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Type</label>
+            <div class="type-toggle" id="typeToggle" style="display:flex; gap:10px; margin-bottom:14px;">
+              <button type="button" data-value="expense" class="secondary-btn on" id="typeEx" style="flex:1; background:rgba(206, 37, 37, 0.15) ;">Expense</button>
+              <button type="button" data-value="income" class="secondary-btn" style="flex:1;">Income</button>
             </div>
-
-
-            <!-- Hidden actual select -->
-
             <select id="type" hidden>
-
-              <option
-                value="expense"
-                selected
-              >
-                Expense
-              </option>
-
-              <option value="income">
-                Income
-              </option>
-
+              <option value="expense" selected >Expense</option>
+              <option value="income">Income</option>
             </select>
 
-
-            <label for="category">
-              Category:
-            </label>
-
-            <select id="category">
-
-              <option>🍕 Food</option>
-
-              <option>🛒 Shopping</option>
-
-              <option>🚗 Transport</option>
-
-              <option>🧾 Bills</option>
-
-              <option>🎬 Entertainment</option>
-
-              <option>💰 Salary</option>
-              
-              <option>💼 Business</option>
-          
-          <option>📱 Internet</option>
-          
-          <option>💻 Wifi</option>
-          
-          <option>🏷 Subscription</option>
-          
-          <option>✈ Travel</option>
-
-
-              <option>🛍 Beauty</option>
-
-              <option>🎁 Gift</option>
-
-              <option>🐶 Pet</option>
-
-              <option>💸 Investments</option>
-
-              <option>🏠Home</option>
-
-              <option>Others</option>
-
-            </select>
-
+            <div class="form-field">
+              <label for="category">Category</label>
+              <select id="category">
+                <option>🍕 Food</option>
+                <option>🛒 Shopping</option>
+                <option>🚗 Transport</option>
+                <option>🧾 Bills</option>
+                <option>🎬 Entertainment</option>
+                <option>💰 Salary</option>
+                <option>💼 Business</option>
+                <option>📱 Internet</option>
+                <option>💻 Wifi</option>
+                <option>🏷 Subscription</option>
+                <option>✈ Travel</option>
+                <option>🛍 Beauty</option>
+                <option>🎁 Gift</option>
+                <option>🐶 Pet</option>
+                <option>💸 Investments</option>
+                <option>🏠 Home</option>
+              </select>
+            </div>
           </div>
-
-
-          <br>
-
-
-          <button
-            type="submit"
-            id="addBtn"
-          >
-            + Add Transaction
-          </button>
-
+          <button type="submit" id="addBtn" class="primary-btn" style="margin-top: 10px;">+ Add Transaction</button>
         </div>
-
       </div>
-
     </div>
 
+    <!-- TRANSACTION DETAILS MODAL -->
+    <div id="transactionDetailModal" class="edit-modal">
+      <div class="edit-card" style="position: relative;">
+        <button id="closeDetailTopBtn" class="modal-close-top" aria-label="Close details" style="position: absolute; top: 18px; left: 18px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;">×</button>
+        <h2 style="text-align: center; margin-bottom: 16px;">Transaction Details</h2>
+        <div id="detailContent" style="margin: 20px 0; line-height: 1.6; color: var(--text-main); text-align: left; display: flex; flex-direction: column; gap: 6px; background: var(--card-bg); padding: 24px; border: 2px solid var(--card-border); border-radius: 25px;"></div>
+        <div class="edit-buttons" style="display: flex; gap: 12px;">
+          <button id="openEditFromDetailBtn" class="primary-btn modal-btn" style="flex: 1;">Edit</button>
+          <button id="deleteFromDetailBtn" class="delBtn modal-btn" style="flex: 1;">Delete</button>
+        </div>
+      </div>
+    </div>
 
-    <!-- =========================
-         EDIT TRANSACTION MODAL
-    ========================== -->
-
-    <div
-      id="editModal"
-      class="edit-modal"
-    >
-
+    <!-- EDIT TRANSACTION MODAL -->
+    <div id="editModal" class="edit-modal">
       <div class="edit-card">
-
-        <h2>
-          Edit Transaction
-        </h2>
-
-
-        <input
-          type="text"
-          id="editTitle"
-          placeholder="Transaction title"
-        >
-
-
-        <input
-          type="number"
-          id="editAmount"
-          placeholder="Amount"
-        >
-
-
-        <select id="editType">
-
-          <option value="expense">
-            Expense
-          </option>
-
-          <option value="income">
-            Income
-          </option>
-
-        </select>
-
-
-        <select id="editCategory">
-
-          <option>🍕 Food</option>
-
-          <option>🛒 Shopping</option>
-
-          <option>🚗 Transport</option>
-
-          <option>🧾 Bills</option>
-
-          <option>🎬 Entertainment</option>
-
-          <option>💰 Salary</option>
-          
-          <option>💼 Business</option>
-          
-          <option>📱 Internet</option>
-          
-          <option>💻 Wifi</option>
-          
-          <option>🏷 Subscription</option>
-          
-          <option>✈ Travel</option>
-
-          <option>🛍 Beauty</option>
-
-          <option>🎁 Gift</option>
-
-          <option>🐶 Pet</option>
-
-          <option>💸 Investments</option>
-
-          <option>🏠 Home</option>
-
-          <option>Others</option>
-
-        </select>
-
-
-        <div class="edit-buttons">
-
-          <button id="saveEditBtn">
-            Save Changes
-            <i class="fa-solid fa-circle-check"></i>
-          </button>
-
-          <button id="cancelEditBtn">
-            Cancel
-            <i class="fa-solid fa-circle-xmark"></i>
-          </button>
-
+        <h2>Edit Transaction</h2>
+        <div class="form-field"><label>Title</label><input type="text" id="editTitle" placeholder="Transaction title"></div>
+        <div class="form-field"><label>Amount</label><input type="number" id="editAmount" placeholder="Amount"></div>
+        <div class="form-field"><label>Note</label><input type="text" id="editNote" placeholder="Note"></div>
+        <div class="form-field"><label>Type</label>
+          <select id="editType">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
         </div>
-
+        <div class="form-field"><label>Category</label>
+          <select id="editCategory">
+            <option>🍕 Food</option>
+            <option>🛒 Shopping</option>
+            <option>🚗 Transport</option>
+            <option>🧾 Bills</option>
+            <option>🎬 Entertainment</option>
+            <option>💰 Salary</option>
+            <option>💼 Business</option>
+            <option>📱 Internet</option>
+            <option>💻 Wifi</option>
+            <option>🏷 Subscription</option>
+            <option>✈ Travel</option>
+            <option>🛍 Beauty</option>
+            <option>🎁 Gift</option>
+            <option>🐶 Pet</option>
+            <option>💸 Investments</option>
+            <option>🏠 Home</option>
+          </select>
+        </div>
+        <div class="edit-buttons">
+          <button id="saveEditBtn" class="primary-btn modal-btn">Save <i class="fa-solid fa-circle-check"></i></button>
+          <button id="cancelEditBtn" class="secondary-btn modal-btn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
+        </div>
       </div>
-
     </div>
 
-
-    <!-- =========================
-         SEARCH + MONTH FILTER
-    ========================== -->
-
-    <div
-      class="filter-row"
-      id="searchForm"
-    >
-
+    <!-- SEARCH & MONTH FILTER -->
+    <div class="filter-row" id="searchForm">
       <select id="monthFilter">
-
-        <option value="all">
-          All Transactions
-        </option>
-
+        <option value="all">All Transactions</option>
       </select>
-
-
-      <input
-        type="text"
-        id="searchBar"
-        placeholder="Search..."
-      >
-
+      <input type="text" id="searchBar" placeholder="Search transactions...">
     </div>
-
 
     <!-- TRANSACTION LIST -->
-
     <div id="expenseList"></div>
-
   </div>
 
-
-  <!-- =========================
-       ANALYTICS SECTION
-  ========================== -->
-
-  <div
-    id="analyticsSection"
-    class="section"
-  >
-
-    <h2 class="section-title">
-      Expense Breakdown
-    </h2>
-
-
-    <div class="chart-wrapper">
-
+  <!-- ANALYTICS SECTION -->
+  <div id="analyticsSection" class="section">
+    <div class="glass-header">
+      <h2 class="section-title">Expense Breakdown</h2>
+      <p>Analyze your spending habits across different periods.</p>
+    </div>
+    <div class="filter-row" style="margin-bottom: 20px;">
+      <select id="analyticsMonthSelect" style="width: 100%;">
+        <option value="current">Current Month</option>
+        <option value="previous">Previous Month</option>
+      </select>
+    </div>
+    <div class="chart-wrapper profile-card" style="padding: 20px; margin-bottom: 20px;">
       <canvas id="expenseChart"></canvas>
-
     </div>
-
-
-    <!-- CATEGORY BREAKDOWN -->
-
-    <div class="category-breakdown">
-
-      <div class="breakdown-header">
-
-        <h3>
-          Spending by category
-        </h3>
-
-        <span id="totalExpenseLabel">
-          ₹0
-        </span>
-
+    <div class="category-breakdown profile-card" style="padding: 20px;">
+      <div class="breakdown-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
+        <h3 style="font-size: 1rem; font-weight: 700; margin: 0;">Spending by category</h3>
+        <span id="totalExpenseLabel" style="font-weight: 800; color: var(--accent-red);">₹0</span>
       </div>
-
-
-      <div id="categoryBreakdown">
-        <!-- JS inserts categories here -->
-      </div>
-
+      <div id="categoryBreakdown"></div>
     </div>
-
   </div>
 
-
-  <!-- =========================
-       BOTTOM NAVIGATION
-  ========================== -->
-
+  <!-- BOTTOM NAVIGATION -->
   <nav class="footer-nav">
-
-
-    <!-- HOME -->
-
-    <button
-      class="nav-btn active"
-      id="navHome"
-    >
-
-      <svg
-        width="22"
-        height="22"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-
-        <path
-          d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
-        />
-
-      </svg>
-
-      <span>
-        Home
-      </span>
-
+    <button class="nav-btn active" id="navHome">
+      <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Home</span>
     </button>
-
-
-    <!-- ANALYTICS -->
-
-    <button
-      class="nav-btn"
-      id="navAnalytics"
-    >
-
-      <svg
-        width="22"
-        height="22"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-
-        <path
-          d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2v-10h2v10zm4 0h-2v-4h2v4z"
-        />
-
-      </svg>
-
-      <span>
-        Analytics
-      </span>
-
+    <button class="nav-btn" id="navAnalytics">
+      <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2v-10h2v10zm4 0h-2v-4h2v4z"/></svg>
+      <span>Analytics</span>
     </button>
-
-
-    <!-- BUDGET -->
-
-    <button
-      id="navBudget"
-      class="nav-btn"
-    >
-
-      <svg
-        width="22"
-        height="22"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-
-        <path
-          d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.89-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"
-        />
-
-      </svg>
-
-      <span>
-        Budget
-      </span>
-
+    <button id="navBudget" class="nav-btn">
+      <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.89-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+      <span>Budget</span>
     </button>
-    
-    
-<button class="nav-btn" id="navAi">
-  <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a4 4 0 0 1 4 4v3h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h1v-3a4 4 0 0 1 4-4h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 11v5h2v-5H9m4 0v5h2v-5h-2z"/>
-  </svg>
-  <span>AI Advisor</span>
-</button>
-
-<button class="nav-btn" id="navSavings">
-  <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M19 10.5V8c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2h-2c-1.1 0-2 .9-2 2v1H7c-1.1 0-2 .9-2 2v2.5c0 .83.67 1.5 1.5 1.5H7v2c0 1.1.9 2 2 2h1v1c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2v-1h1c1.1 0 2-.9 2-2v-2h.5c.83 0 1.5-.67 1.5-1.5zM7 10V8h10v2H7zm10 6h-2v-2h2v2z"/>
-  </svg>
-  <span>Goals</span>
-</button>
-
+    <button class="nav-btn" id="navAi">
+      <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a4 4 0 0 1 4 4v3h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-1H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h1v-3a4 4 0 0 1 4-4h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M9 11v5h2v-5H9m4 0v5h2v-5h-2z"/></svg>
+      <span>AI Advisor</span>
+    </button>
+    <button class="nav-btn" id="navSavings">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Goals</span>
+    </button>
 
   </nav>
 
-
-  <!-- =========================
-       BUDGET SECTION
-  ========================== -->
-
-  <div
-    id="budgetSection"
-    class="section"
-  >
-
+  <!-- BUDGET SECTION -->
+  <div id="budgetSection" class="section">
     <div class="budget-page">
-
-      <h2 class="budgetH1">
-        Monthly Budget
-      </h2>
-
-      <p class="budget-subtitle">
-        Manage your spending limit
-      </p>
-
-
-      <div class="budget-card">
-
-        <div class="budget-header">
-
-          <div>
-
-            <p>
-              Budget
-            </p>
-
-            <h2 id="budgetAmount">
-              ₹0
-            </h2>
-
-          </div>
-
-
-          <button id="editBudgetBtn">
-
-            <i class="fa-solid fa-pencil"></i>
-
-          </button>
-
-        </div>
-
-
-        <div class="budget-stats">
-
-          <div>
-
-            <span>
-              Spent
-            </span>
-
-            <strong id="budgetSpent">
-              ₹0
-            </strong>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              Remaining
-            </span>
-
-            <strong id="budgetRemaining">
-              ₹0
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <div class="progress-container">
-
-          <div id="budgetProgress"></div>
-
-        </div>
-
-
-        <p id="budgetStatus">
-          Set your monthly budget
-        </p>
-
-      </div>
-      
-      <div id="budgetAlerts">
-        <h3 id="budgetAlertH3"></h3>
-        <p id="budgetAlertP"></p>
+      <div class="glass-header">
+        <h2 class="budgetH1">Category Budgets</h2>
+        <p class="budget-subtitle">Set specific limits for each category. Overall budget updates automatically.</p>
       </div>
 
-    </div>
+      <div class="budget-card profile-card" style="padding: 22px;">
+        <div class="budget-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+          <div>
+            <p style="margin: 0; text-align: left !important; font-size: 0.85rem;">Total Monthly Budget</p>
+            <h2 id="budgetAmount" style="text-align: left !important; margin: 4px 0 0; font-size: 1.8rem; color: var(--accent-green-bright);">₹0</h2>
+          </div>
+          <button id="editBudgetBtn" class="secondary-btn" style="height: auto; width: auto; padding: 8px 14px; font-size: 0.82rem;"><i class="fa-solid fa-pencil"></i> Edit</button>
+        </div>
 
-  </div>
-  
+        <div class="budget-stats" style="display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 0.9rem;">
+          <div>
+            <span style="color: var(--text-muted);">Spent: </span>
+            <strong id="budgetSpent" style="color: var(--accent-red);">₹0</strong>
+          </div>
+          <div>
+            <span style="color: var(--text-muted);">Remaining: </span>
+            <strong id="budgetRemaining" style="color: var(--accent-green-bright);">₹0</strong>
+          </div>
+        </div>
 
-<!-- AI Section Container -->
-<div id="aiSection" class="section">
-  <h2 class="section-title">SpendWISE AI Advisor</h2>
-  <div class="chat-container">
-<div id="chatMessages" class="chat-messages">
-  <div class="message-wrapper ai-wrapper">
-    <div class="chat-avatar ai-avatar">
-      <i class="fa-solid fa-robot"></i>
-    </div>
-    <div class="message ai-msg">
-      Hello! I'm your SpendWISE AI assistant. Ask me anything about your spending or how to save money!
-    </div>
-  </div>
-</div>
-
-    <div class="chat-input-area">
-      <input type="text" id="aiInput" placeholder="Ask about your budget, e.g., 'How can I save more on food?'">
-      <button id="aiSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
-    </div>
-  </div>
-</div>
-
-<!-- =========================
-     SAVINGS GOALS SECTION
-========================== -->
-<div id="savingsSection" class="section">
-  <div class="savings-page">
-    
-    <!-- Centered Header & Subtitle -->
-    <div class="savings-header-center">
-      <h2 class="section-title">Savings Goals</h2>
-      <p class="savings-subtitle">Build your future, one day at a time</p>
-    </div>
-
-    <!-- "+ New Goal" Button Positioned Underneath Header, Right-aligned -->
-    <div class="savings-action-bar">
-      <button id="openGoalModalBtn" class="primary-btn-sm">
-        <i class="fa-solid fa-plus"></i> New Goal
-      </button>
-    </div>
-
-    <!-- Active Savings Goal Cards -->
-    <div id="goalsContainer" class="goals-container">
-      <!-- Dynamic goals will be injected here by JS -->
-    </div>
-
-  </div>
-</div>
-
-
-<!-- =========================
-     NEW GOAL MODAL
-========================== -->
-<div id="goalModal" class="budget-modal">
-  <div class="budget-modal-card">
-    <h2>Create Savings Goal</h2>
-    
-    <div class="form-field">
-      <label for="goalTitle">Goal Name (e.g. Mobile)</label>
-      <input type="text" id="goalTitle" placeholder="e.g. New Phone">
-    </div>
-
-    <div class="form-field">
-      <label for="goalTargetAmount">Target Amount</label>
-      <input type="number" id="goalTargetAmount" placeholder="e.g. 15000">
-    </div>
-
-    <div class="form-field">
-      <label>Suggested Daily Target</label>
-      <div class="type-toggle" id="dailyPresetToggle">
-        <button type="button" data-value="100">₹100/day</button>
-        <button type="button" data-value="300" class="on">₹300/day</button>
-        <button type="button" data-value="500">₹500/day</button>
+        <div class="progress-container" style="width: 100%; height: 10px; background: var(--input-bg); border-radius: 6px; overflow: hidden; margin-bottom: 10px; border: 1px solid var(--card-border);">
+          <div id="budgetProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #059669, #34D399); transition: width 0.3s ease;"></div>
+        </div>
+        <p id="budgetStatus" style="margin: 0; font-size: 0.82rem; opacity: 0.7;">Set category budgets or total budget</p>
       </div>
-      <input type="number" id="goalDailyTarget" placeholder="Custom daily target" style="margin-top: 8px;">
-    </div>
 
-    <div class="budget-modal-buttons">
-      <button id="saveGoalBtn">Create Goal <i class="fa-solid fa-circle-check"></i></button>
-      <button id="cancelGoalBtn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
+      <div id="categoryBudgetContainer" style="margin-top: 20px; display: flex; flex-direction: column; gap: 14px;"></div>
     </div>
   </div>
-</div>
 
-<!-- =========================
-     DAILY CHECK-IN MODAL
-========================== -->
-<div id="checkinModal" class="budget-modal">
-  <div class="budget-modal-card">
-    <h2>Did you save today?</h2>
-    <p id="checkinGoalName" style="color: var(--text-muted); margin-bottom: 16px;"></p>
-    
-    <div class="form-field" id="checkinAmountWrapper" style="display:none;">
-      <label for="checkinAmount">How much did you save?</label>
-      <input type="number" id="checkinAmount" placeholder="Enter amount">
+  <!-- AI SECTION -->
+  <div id="aiSection" class="section">
+    <div class="glass-header">
+      <h2 class="section-title">SpendWISE AI Advisor</h2>
+      <p>Ask questions regarding your financial habits and goals.</p>
     </div>
-
-    <div class="budget-modal-buttons" id="checkinInitialBtns">
-      <button id="checkinNoBtn" style="background-color: #ef4444; color: #fff;">No</button>
-      <button id="checkinYesBtn" style="background-color: var(--accent-green); color: #000;">Yes!</button>
-    </div>
-
-    <div class="budget-modal-buttons" id="checkinSubmitBtns" style="display:none;">
-      <button id="submitCheckinBtn">Confirm & Save <i class="fa-solid fa-circle-check"></i></button>
-      <button id="cancelCheckinBtn" style="background: transparent; border: 1px solid var(--card-border);">Back</button>
+    <div class="chat-container">
+      <div id="chatMessages" class="chat-messages">
+        <div class="message-wrapper ai-wrapper">
+          <div class="chat-avatar ai-avatar">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="message ai-msg">
+            Hello! I'm your SpendWISE AI assistant. Ask me anything about your spending or how to save money! 💡
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="aiInput" placeholder="Ask about your budget, e.g., 'How can I save more on food?'">
+        <button id="aiSendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+      </div>
     </div>
   </div>
-</div>
 
-
-  <!-- =========================
-       PROFILE SECTION
-  ========================== -->
-
-  <div
-    id="profileSection"
-    class="section"
-  >
-
-    <div class="profile-page">
-
-
-      <!-- PROFILE HEADER -->
-
-      <header class="profile-header">
-
-        <button
-          id="profileBackBtn"
-          class="profile-back-btn"
-          aria-label="Back to home"
-        >
-
-          <i class="fa-solid fa-arrow-left"></i>
-
+  <!-- SAVINGS SECTION -->
+  <div id="savingsSection" class="section">
+    <div class="savings-page">
+      <div class="glass-header savings-header-center">
+        <h2 class="section-title">Savings Goals</h2>
+        <p class="savings-subtitle">Build your future, one day at a time</p>
+      </div>
+      <div class="savings-action-bar" style="display: flex; justify-content: center; margin-bottom: 16px;">
+        <button id="openGoalModalBtn" class="primary-btn-sm" style="width: auto; padding: 12px 24px;">
+          <i class="fa-solid fa-plus"></i> New Goal
         </button>
+      </div>
+      <div id="goalsContainer" class="goals-container"></div>
+    </div>
+  </div>
 
+  <!-- GOAL MODAL -->
+  <div id="goalModal" class="budget-modal">
+    <div class="budget-modal-card">
+      <h2>Create Savings Goal</h2>
+      <div class="form-field">
+        <label for="goalTitle">Goal Name (e.g. Mobile)</label>
+        <input type="text" id="goalTitle" placeholder="e.g. New Phone">
+      </div>
+      <div class="form-field">
+        <label for="goalTargetAmount">Target Amount</label>
+        <input type="number" id="goalTargetAmount" placeholder="e.g. 15000">
+      </div>
+      <div class="form-field">
+        <label>Suggested Daily Target</label>
+        <div class="type-toggle" id="dailyPresetToggle" style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <button type="button" class="preset-pill" data-value="100">100/day</button>
+          <button type="button" class="preset-pill on active-pill" data-value="300">300/day</button>
+          <button type="button" class="preset-pill" data-value="500">500/day</button>
+        </div>
+        <input type="number" id="goalDailyTarget" placeholder="Custom daily target" value="300">
+      </div>
+      <div class="budget-modal-buttons">
+        <button id="saveGoalBtn" class="primary-btn modal-btn">Create Goal <i class="fa-solid fa-circle-check"></i></button>
+        <button id="cancelGoalBtn" class="secondary-btn modal-btn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
+      </div>
+    </div>
+  </div>
 
-        <h2>
-          Profile
-        </h2>
+  <!-- CHECK-IN MODAL -->
+  <div id="checkinModal" class="budget-modal">
+    <div class="budget-modal-card">
+      <h2 style="margin-bottom: 15px;">Did you save today?</h2>
+      <p id="checkinGoalName" style="color: var(--text-muted); margin-bottom: 16px;"></p>
+      <div class="form-field" id="checkinAmountWrapper" style="display:none;">
+        <label for="checkinAmount">How much did you save?</label>
+        <input type="number" id="checkinAmount" placeholder="Enter amount">
+      </div>
+      <div class="budget-modal-buttons" id="checkinInitialBtns">
+        <button id="checkinNoBtn" class="delBtn modal-btn">No</button>
+        <button id="checkinYesBtn" class="primary-btn modal-btn">Yes!</button>
+      </div>
+      <div class="budget-modal-buttons" id="checkinSubmitBtns" style="display:none;">
+        <button id="submitCheckinBtn" class="primary-btn modal-btn">Confirm & Save <i class="fa-solid fa-circle-check"></i></button>
+        <button id="cancelCheckinBtn" class="secondary-btn modal-btn">Back</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- CATEGORY LIMIT MODAL (Custom Styled) -->
+  <div id="categoryLimitModal" class="budget-modal">
+    <div class="budget-modal-card">
+      <h2 id="categoryLimitModalTitle">Set Category Limit</h2>
+      <p id="categoryLimitModalSubtitle" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; margin-top: 15px; text-align: center;"></p>
+      <div class="form-field" style="margin: 14px 0;">
+        <label>Limit Amount</label>
+        <input type="number" id="categoryLimitInput" placeholder="Enter limit amount" min="1">
+      </div>
+      <div class="budget-modal-buttons">
+        <button id="saveCategoryLimitBtn" class="primary-btn modal-btn">Save Limit <i class="fa-solid fa-circle-check"></i></button>
+        <button id="cancelCategoryLimitBtn" class="secondary-btn modal-btn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
+      </div>
+    </div>
+  </div>
 
+  <!-- PROFILE SECTION -->
+  <div id="profileSection" class="section">
+    <div class="profile-page">
+      <header class="profile-header">
+        <button id="profileBackBtn" class="profile-back-btn" aria-label="Back to home">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <h2 style="text-align: center; font-weight: 800; text-transform: uppercase;">Profile</h2>
         <div class="profile-header-spacer"></div>
-
       </header>
 
-
-      <!-- PROFILE HERO -->
-
       <div class="profile-hero">
-
         <div class="profile-avatar">
-
           <i class="fa-solid fa-user"></i>
-
         </div>
-
-
-        <h1>
-          SpendWISE User
-        </h1>
-
-
-        <p id="profileEmail">
-          your@email.com
-        </p>
-
+        <h1>SpendWISE User</h1>
+        <p id="profileEmail">your@email.com</p>
       </div>
 
-
-      <!-- =========================
-           ACCOUNT
-      ========================== -->
-
       <div class="profile-card">
-
-        <div class="profile-card-title">
-
-          <span>
-            ACCOUNT
-          </span>
-
-        </div>
-
-
-        <!-- EMAIL -->
-
+        <div class="profile-card-title"><span>ACCOUNT</span></div>
         <div class="profile-row profile-row-static">
-
-          <div class="profile-row-icon">
-
-            <i class="fa-solid fa-envelope"></i>
-
-          </div>
-
-
+          <div class="profile-row-icon"><i class="fa-solid fa-envelope"></i></div>
           <div class="profile-row-content">
-
-            <strong>
-              Email
-            </strong>
-
-            <small id="profileEmailRow">
-              your@email.com
-            </small>
-
+            <strong>Email</strong>
+            <small id="profileEmailRow">your@email.com</small>
           </div>
-
         </div>
-
-
-        <!-- CHANGE PASSWORD -->
-
-        <button
-          id="changePasswordBtn"
-          class="profile-row"
-        >
-
-          <div class="profile-row-icon">
-
-            <i class="fa-solid fa-lock"></i>
-
-          </div>
-
-
+        <button id="changePasswordBtn" class="profile-row">
+          <div class="profile-row-icon"><i class="fa-solid fa-lock"></i></div>
           <div class="profile-row-content">
-
-            <strong>
-              Change Password
-            </strong>
-
-            <small>
-              Send a password reset email
-            </small>
-
+            <strong>Change Password</strong>
+            <small>Send a password reset email</small>
           </div>
-
-
           <i class="fa-solid fa-chevron-right profile-chevron"></i>
-
         </button>
-
       </div>
 
-
-      <!-- =========================
-           SPENDWISE STATS
-      ========================== -->
-
       <div class="profile-card">
-
-        <div class="profile-card-title">
-
-          <span>
-            YOUR SPENDWISE
-          </span>
-
-        </div>
-
-
+        <div class="profile-card-title"><span>YOUR SPENDWISE</span></div>
         <div class="profile-stats">
-
           <div class="profile-stat">
-
-            <strong id="profileTransactions">
-              0
-            </strong>
-
-            <span>
-              Transactions
-            </span>
-
+            <strong id="profileTransactions">0</strong>
+            <span>Transactions</span>
           </div>
-
-
           <div class="profile-stat">
-
-            <strong id="profileIncome">
-              ₹0
-            </strong>
-
-            <span>
-              Total Income
-            </span>
-
+            <strong id="profileIncome">₹0</strong>
+            <span>Total Income</span>
           </div>
-
-
           <div class="profile-stat">
-
-            <strong id="profileExpenses">
-              ₹0
-            </strong>
-
-            <span>
-              Total Expenses
-            </span>
-
+            <strong id="profileExpenses">₹0</strong>
+            <span>Total Expenses</span>
           </div>
-
         </div>
-
       </div>
-
-
-      <!-- =========================
-           PREFERENCES
-      ========================== -->
 
       <div class="profile-card">
-
-        <div class="profile-card-title">
-
-          <span>
-            PREFERENCES
-          </span>
-
-        </div>
-
-
-        <!-- CURRENCY -->
-
-<button
-  id="currencyBtn"
-  class="profile-row"
->
-
-  <div class="profile-row-icon">
-
-    <i class="fa-solid fa-coins"></i>
-
-  </div>
-
-  <div class="profile-row-content">
-
-    <strong>
-      Currency
-    </strong>
-
-    <small id="currencyText">
-      Indian Rupee (₹ INR)
-    </small>
-
-  </div>
-
-  <i class="fa-solid fa-chevron-right profile-chevron"></i>
-
-</button>
-
-
-        <!-- APPEARANCE -->
-
-        <button
-          id="profileThemeBtn"
-          class="profile-row"
-        >
-
-          <div class="profile-row-icon">
-
-            <i
-              id="profileThemeIcon"
-              class="fa-solid fa-moon"
-            ></i>
-
-          </div>
-
-
+        <div class="profile-card-title"><span>PREFERENCES</span></div>
+        <button id="currencyBtn" class="profile-row">
+          <div class="profile-row-icon"><i class="fa-solid fa-coins"></i></div>
           <div class="profile-row-content">
-
-            <strong>
-              Appearance
-            </strong>
-
-            <small id="profileThemeText">
-              Dark Mode
-            </small>
-
+            <strong>Currency</strong>
+            <small id="currencyText">Indian Rupee (₹ INR)</small>
           </div>
-
-
           <i class="fa-solid fa-chevron-right profile-chevron"></i>
-
         </button>
-
+        <button id="profileThemeBtn" class="profile-row">
+          <div class="profile-row-icon"><i id="profileThemeIcon" class="fa-solid fa-moon"></i></div>
+          <div class="profile-row-content">
+            <strong>Appearance</strong>
+            <small id="profileThemeText">Dark Mode</small>
+          </div>
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+        </button>
+        <button id="openCategoryModalBtn" class="profile-row">
+          <div class="profile-row-icon"><i class="fa-solid fa-folder-plus"></i></div>
+          <div class="profile-row-content">
+            <strong>Create Personal Category</strong>
+            <small>Add custom category tags</small>
+          </div>
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+        </button>
       </div>
-
-
-      <!-- =========================
-           DATA & PRIVACY
-      ========================== -->
 
       <div class="profile-card">
-
-        <div class="profile-card-title">
-
-          <span>
-            DATA & PRIVACY
-          </span>
-
-        </div>
-
-
-        <!-- EXPORT -->
-
-        <button
-          id="exportDataBtn"
-          class="profile-row"
-        >
-
-          <div class="profile-row-icon">
-
-            <i class="fa-solid fa-download"></i>
-
-          </div>
-
-
+        <div class="profile-card-title"><span>DATA & PRIVACY</span></div>
+        <button id="exportDataBtn" class="profile-row">
+          <div class="profile-row-icon"><i class="fa-solid fa-download"></i></div>
           <div class="profile-row-content">
-
-            <strong>
-              Export Transactions
-            </strong>
-
-            <small>
-              Download your data as CSV
-            </small>
-
+            <strong>Export Transactions</strong>
+            <small>Download your data as CSV</small>
           </div>
-
-
           <i class="fa-solid fa-chevron-right profile-chevron"></i>
-
         </button>
-
       </div>
 
-
-      <!-- =========================
-           ABOUT
-      ========================== -->
-
-      <div class="profile-card about-card">
-
+      <div class="profile-card about-card" style="text-align: center; padding: 20px;">
         <div class="about-logo">
-          <img src="logo.png" height="60px" width="60px" id="icon">
+          <img src="logo.png" height="50px" width="50px" id="icon" alt="logo" style="border-radius: 50%;">
         </div>
-<br>
-        <p>
-          Simple, private expense tracking.
-        </p>
-
-
-        <small>
-          Version 1.0.0
-        </small>
-
+        <p style="margin: 10px 0 4px;">Simple, private expense tracking.</p>
+        <small style="color: var(--text-muted);">Version 2.0.0</small>
       </div>
 
-
-      <!-- PROFILE LOGOUT -->
-
-      <button
-        id="profileLogoutBtn"
-        class="profile-logout"
-      >
-
-        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-
-        Log Out
-
+      <button id="profileLogoutBtn" class="profile-logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
       </button>
-
     </div>
-
   </div>
 
-
-  <!-- =========================
-       BUDGET MODAL
-  ========================== -->
-
-  <div
-    id="budgetModal"
-    class="budget-modal"
-  >
-
+  <!-- BUDGET MODAL -->
+  <div id="budgetModal" class="budget-modal">
     <div class="budget-modal-card">
-
-      <h2>
-        Set Monthly Budget
-      </h2>
-
-
-      <input
-        type="number"
-        id="budgetInput"
-        placeholder="Enter budget"
-        min="1"
-      >
-
-
+      <h2 id="budgetModalTitle">Set Budget</h2>
+      <div class="form-field" style="margin: 14px 0;">
+        <label>Amount Limit</label>
+        <input type="number" id="budgetInput" placeholder="Enter budget limit" min="1">
+      </div>
       <div class="budget-modal-buttons">
-
-        <button id="saveBudgetBtn">
-
-          Save Budget
-
-          <i class="fa-solid fa-circle-check"></i>
-
-        </button>
-
-
-        <button id="cancelBudgetBtn">
-
-          Cancel
-
-          <i class="fa-solid fa-circle-xmark"></i>
-
-        </button>
-
+        <button id="saveBudgetBtn" class="primary-btn modal-btn">Save Budget <i class="fa-solid fa-circle-check"></i></button>
+        <button id="cancelBudgetBtn" class="secondary-btn modal-btn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
       </div>
-
     </div>
-
-  </div>
-<!-- =========================
-     CURRENCY MODAL
-========================== -->
-
-<div
-  id="currencyModal"
-  class="currency-modal"
->
-
-  <div class="currency-modal-card">
-
-    <div class="currency-modal-header">
-
-      <div>
-        <h2>Choose Currency</h2>
-        <p>Select your preferred currency</p>
-      </div>
-
-      <button
-        id="closeCurrencyModal"
-        class="modal-close"
-        aria-label="Close"
-      >
-        ×
-      </button>
-
-    </div>
-
-
-    <div class="currency-options">
-
-      <button
-        class="currency-option"
-        data-currency="INR"
-      >
-
-        <span class="currency-flag">🇮🇳</span>
-
-        <span class="currency-info">
-          <strong>Indian Rupee</strong>
-          <small>₹ INR</small>
-        </span>
-
-        <i class="fa-solid fa-check currency-check"></i>
-
-      </button>
-
-
-      <button
-        class="currency-option"
-        data-currency="USD"
-      >
-
-        <span class="currency-flag">🇺🇸</span>
-
-        <span class="currency-info">
-          <strong>US Dollar</strong>
-          <small>$ USD</small>
-        </span>
-
-        <i class="fa-solid fa-check currency-check"></i>
-
-      </button>
-
-
-      <button
-        class="currency-option"
-        data-currency="GBP"
-      >
-
-        <span class="currency-flag">🇬🇧</span>
-
-        <span class="currency-info">
-          <strong>British Pound</strong>
-          <small>£ GBP</small>
-        </span>
-
-        <i class="fa-solid fa-check currency-check"></i>
-
-      </button>
-
-
-      <button
-        class="currency-option"
-        data-currency="EUR"
-      >
-
-        <span class="currency-flag">🇪🇺</span>
-
-        <span class="currency-info">
-          <strong>Euro</strong>
-          <small>€ EUR</small>
-        </span>
-
-        <i class="fa-solid fa-check currency-check"></i>
-
-      </button>
-
-    </div>
-
   </div>
 
-</div>
+  <!-- CUSTOM CATEGORY MODAL -->
+  <div id="categoryModal" class="budget-modal">
+    <div class="budget-modal-card">
+      <h2>Create Custom Category</h2>
+      <div class="form-field" style="margin: 14px 0;">
+        <label for="newCategoryName">Category Name (with optional emoji)</label>
+        <input type="text" id="newCategoryName" placeholder="e.g. ⚡ Gaming">
+      </div>
+      <div class="budget-modal-buttons">
+        <button id="saveCategoryBtn" class="primary-btn modal-btn">Add Category <i class="fa-solid fa-circle-check"></i></button>
+        <button id="cancelCategoryBtn" class="secondary-btn modal-btn">Cancel <i class="fa-solid fa-circle-xmark"></i></button>
+      </div>
+    </div>
+  </div>
 
-  <!-- MAIN JAVASCRIPT -->
+  <!-- CURRENCY MODAL -->
+  <div id="currencyModal" class="currency-modal">
+    <div class="currency-modal-card">
+      <div class="currency-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div>
+          <h2>Choose Currency</h2>
+          <p style="margin: 0; text-align: left !important;">Select your preferred currency</p>
+        </div>
+        <button id="closeCurrencyModal" class="modal-close" style="background:transparent; border:none; font-size:24px; color:var(--text-main); cursor:pointer;">×</button>
+      </div>
+      <div class="currency-options" id="currencyOptionsContainer"></div>
+    </div>
+  </div>
 
-  <script
-    type="module"
-    src="main.js"
-  ></script>
-
+  <script type="module" src="main.js"></script>
 </body>
-
 </html>
