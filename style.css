@@ -624,7 +624,7 @@ input:focus, select:focus {
 .footer-nav {
   position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
   height: 72px; background: var(--nav-bg); border-top: 1px solid var(--nav-border); backdrop-filter: blur(18px);
-  display: flex; align-items: center; justify-content: space-around; padding: 8px 10px; z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.25);
+  display: none; align-items: center; justify-content: space-around; padding: 8px 10px; z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.25);
 }
 .nav-btn {
   flex: 1; background: transparent; border: none; color: var(--text-muted); display: flex;
@@ -632,8 +632,30 @@ input:focus, select:focus {
 }
 .nav-btn.active { color: var(--accent-green-bright); }
 
-.section { display: none; }
 .active-section { display: block; }
+
+
+/* When active, override display */
+/* Hide auth section, main sections, and footer by default until auth resolves */
+#authSection,
+.section, 
+.footer-nav {
+  display: none;
+}
+
+/* Show states when triggered */
+#authSection.show-auth {
+  display: flex;
+}
+
+.section.active-section {
+  display: block;
+}
+
+.footer-nav.show-nav {
+  display: flex;
+}
+
 
 #openGoalModalBtn{
   border: none;
