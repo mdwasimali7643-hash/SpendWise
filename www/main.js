@@ -1,41 +1,7 @@
-// ===============================
-// FIREBASE IMPORTS
-// ===============================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-import {
-  getAI,
-  getGenerativeModel,
-  GoogleAIBackend
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-ai.js";
-
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  getDoc,
-  deleteDoc,
-  updateDoc,
-  doc,
-  query,
-  where,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-// ===============================
-// FIREBASE CONFIG
-// ===============================
+import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-ai.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, deleteDoc, updateDoc, doc, query, where, setDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDbjHCHaRhcwBNFCyphhW7fPkGqPXxoZPM",
@@ -47,126 +13,96 @@ const firebaseConfig = {
   measurementId: "G-YQRVKCBTR5"
 };
 
-
-
-// ===============================
-// INITIALIZE FIREBASE
-// ===============================
-
-import {
-  initializeAppCheck,
-  ReCaptchaEnterpriseProvider
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app-check.js";
-
-if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-}
-
-
 const app = initializeApp(firebaseConfig);
-
-const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaEnterpriseProvider(
-    "6LfHsfMtAAAAAJhojJuANlREGArAKDMLG-a7d__9"
-  ),
-  isTokenAutoRefreshEnabled: true
-});
-
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const ai = getAI(app, { backend: new GoogleAIBackend() });
+const aiModel = getGenerativeModel(ai, { model: "gemini-3.8-flash" });
 
-
-// ===============================
-// FIREBASE AI LOGIC
-// ===============================
-
-const ai = getAI(app, {
-  backend: new GoogleAIBackend()
-});
-
-const aiModel = getGenerativeModel(ai, {
-  model: "gemini-3.8-flash"
-});
-
-// ===============================
-// DOM ELEMENTS
-// ===============================
-
-// Auth
+// DOM Elements
 const email = document.getElementById("email");
 const password = document.getElementById("password");
-
 const signupBtn = document.getElementById("signupBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-
 const authSection = document.getElementById("authSection");
 
-// App sections
 const homeSection = document.getElementById("homeSection");
 const analyticsSection = document.getElementById("analyticsSection");
 const budgetSection = document.getElementById("budgetSection");
 const profileSection = document.getElementById("profileSection");
+const aiSection = document.getElementById("aiSection");
+const savingsSection = document.getElementById("savingsSection");
 
 const footerNav = document.querySelector(".footer-nav");
-
-// Navigation
 const navHome = document.getElementById("navHome");
 const navAnalytics = document.getElementById("navAnalytics");
 const navBudget = document.getElementById("navBudget");
 const navAi = document.getElementById("navAi");
-const aiSection = document.getElementById("aiSection");
+const navSavings = document.getElementById("navSavings");
+
 const aiInput = document.getElementById("aiInput");
 const aiSendBtn = document.getElementById("aiSendBtn");
 const chatMessages = document.getElementById("chatMessages");
 
-
-// Transaction form
 const expenseName = document.getElementById("expenseName");
 const amount = document.getElementById("expenseAmount");
+const expenseNote = document.getElementById("expenseNote");
 const addBtn = document.getElementById("addBtn");
-
 const expenseList = document.getElementById("expenseList");
-
 const type = document.getElementById("type");
 const category = document.getElementById("category");
 
-// Balance
 const incomeDisplay = document.getElementById("income");
 const expenseDisplay = document.getElementById("expense");
 const total = document.getElementById("balance");
 
-// Search
 const monthFilter = document.getElementById("monthFilter");
 const searchBar = document.getElementById("searchBar");
+
+const transactionModal = document.getElementById("transactionModal");
+const openTransactionModal = document.getElementById("openTransactionModal");
+const closeTransactionModal = document.getElementById("closeTransactionModal");
+
+const transactionDetailModal = document.getElementById("transactionDetailModal");
+const detailContent = document.getElementById("detailContent");
+const openEditFromDetailBtn = document.getElementById("openEditFromDetailBtn");
+const deleteFromDetailBtn = document.getElementById("deleteFromDetailBtn");
+const closeDetailTopBtn = document.getElementById("closeDetailTopBtn");
 
 const editModal = document.getElementById("editModal");
 const editTitle = document.getElementById("editTitle");
 const editAmount = document.getElementById("editAmount");
+const editNote = document.getElementById("editNote");
 const editType = document.getElementById("editType");
 const editCategory = document.getElementById("editCategory");
-
 const saveEditBtn = document.getElementById("saveEditBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
+
 const budgetAmount = document.getElementById("budgetAmount");
 const budgetSpent = document.getElementById("budgetSpent");
 const budgetRemaining = document.getElementById("budgetRemaining");
 const budgetProgress = document.getElementById("budgetProgress");
 const budgetStatus = document.getElementById("budgetStatus");
-const budgetAlert = document.getElementById('budgetAlerts')
-const budgetAlertH3 = document.getElementById('budgetAlertH3')
-const budgetAlertP = document.getElementById('budgetAlertP')
-
 const editBudgetBtn = document.getElementById("editBudgetBtn");
-
 const budgetModal = document.getElementById("budgetModal");
 const budgetInput = document.getElementById("budgetInput");
-
 const saveBudgetBtn = document.getElementById("saveBudgetBtn");
 const cancelBudgetBtn = document.getElementById("cancelBudgetBtn");
+const budgetModalTitle = document.getElementById("budgetModalTitle");
+const categoryBudgetContainer = document.getElementById("categoryBudgetContainer");
 
-// Profile DOM
+// Category Limit Custom Modal Elements
+const categoryLimitModal = document.getElementById("categoryLimitModal");
+const categoryLimitModalTitle = document.getElementById("categoryLimitModalTitle");
+const categoryLimitModalSubtitle = document.getElementById("categoryLimitModalSubtitle");
+const categoryLimitInput = document.getElementById("categoryLimitInput");
+const saveCategoryLimitBtn = document.getElementById("saveCategoryLimitBtn");
+const cancelCategoryLimitBtn = document.getElementById("cancelCategoryLimitBtn");
+
+let activeCategoryForLimit = null;
+
 const profileBtn = document.getElementById("profileBtn");
 const profileBackBtn = document.getElementById("profileBackBtn");
 const profileLogoutBtn = document.getElementById("profileLogoutBtn");
@@ -185,217 +121,190 @@ const currencyBtn = document.getElementById("currencyBtn");
 const currencyText = document.getElementById("currencyText");
 const currencyModal = document.getElementById("currencyModal");
 const closeCurrencyModal = document.getElementById("closeCurrencyModal");
-const currencyOptions = document.querySelectorAll(".currency-option");
+const currencyOptionsContainer = document.getElementById("currencyOptionsContainer");
 
-// =====================================
-// CURRENCY
-// =====================================
+const openCategoryModalBtn = document.getElementById("openCategoryModalBtn");
+const categoryModal = document.getElementById("categoryModal");
+const newCategoryName = document.getElementById("newCategoryName");
+const saveCategoryBtn = document.getElementById("saveCategoryBtn");
+const cancelCategoryBtn = document.getElementById("cancelCategoryBtn");
 
+const analyticsMonthSelect = document.getElementById("analyticsMonthSelect");
+const menuBtn = document.getElementById("menuBtn");
+const headerMenu = document.getElementById("headerMenu");
+
+const themeBtn = document.getElementById("themeBtn");
+const themeIcon = document.getElementById("themeIcon");
+const themeText = document.getElementById("themeText");
+
+// Currencies
 const currencies = {
-  INR: { name: "Indian Rupee", symbol: "₹", code: "INR" },
-  USD: { name: "US Dollar", symbol: "$", code: "USD" },
-  GBP: { name: "British Pound", symbol: "£", code: "GBP" },
-  EUR: { name: "Euro", symbol: "€", code: "EUR" }
+  INR: { name: "Indian Rupee", symbol: "₹", code: "INR", flag: "🇮🇳" },
+  USD: { name: "US Dollar", symbol: "$", code: "USD", flag: "🇺🇸" },
+  EUR: { name: "Euro", symbol: "€", code: "EUR", flag: "🇪🇺" },
+  GBP: { name: "British Pound", symbol: "£", code: "GBP", flag: "🇬🇧" },
+  CAD: { name: "Canadian Dollar", symbol: "CA$", code: "CAD", flag: "🇨🇦" },
+  AUD: { name: "Australian Dollar", symbol: "A$", code: "AUD", flag: "🇦🇺" },
+  JPY: { name: "Japanese Yen", symbol: "¥", code: "JPY", flag: "🇯🇵" },
+  CNY: { name: "Chinese Yuan", symbol: "¥", code: "CNY", flag: "🇨🇳" },
+  AED: { name: "UAE Dirham", symbol: "AED", code: "AED", flag: "🇦🇪" },
+  SGD: { name: "Singapore Dollar", symbol: "S$", code: "SGD", flag: "🇸🇬" }
 };
 
 let selectedCurrency = localStorage.getItem("currency") || "INR";
-
-function getCurrency() {
-  return currencies[selectedCurrency] || currencies.INR;
-}
-
+function getCurrency() { return currencies[selectedCurrency] || currencies.INR; }
 function formatMoney(amount) {
   const currency = getCurrency();
-  return `${currency.symbol}${formatINR(amount)}`;
+  return `${currency.symbol}${Number(amount).toLocaleString("en-IN")}`;
 }
 
+function populateCurrencyOptions() {
+  if (!currencyOptionsContainer) return;
+  currencyOptionsContainer.innerHTML = "";
+  Object.values(currencies).forEach(c => {
+    const btn = document.createElement("button");
+    btn.className = `currency-option ${c.code === selectedCurrency ? "selected" : ""}`;
+    btn.innerHTML = `
+      <span class="currency-flag">${c.flag}</span>
+      <span class="currency-info"><strong>${c.name}</strong><small>${c.symbol} ${c.code}</small></span>
+    `;
+    btn.addEventListener("click", () => {
+      selectedCurrency = c.code;
+      localStorage.setItem("currency", selectedCurrency);
+      updateCurrencyUI();
+      updateBalance();
+      updateBudget();
+      if (chartInstance) updateChart();
+      updateProfile();
+      showExpense();
+      currencyModal.classList.remove("show");
+    });
+    currencyOptionsContainer.appendChild(btn);
+  });
+}
 function updateCurrencyUI() {
   const currency = getCurrency();
-  currencyText.textContent = `${currency.name} (${currency.symbol} ${currency.code})`;
-  
-  currencyOptions.forEach(option => {
-    option.classList.toggle(
-      "selected",
-      option.dataset.currency === selectedCurrency
-    );
+  if (currencyText) currencyText.textContent = `${currency.name} (${currency.symbol} ${currency.code})`;
+}
+populateCurrencyOptions();
+updateCurrencyUI();
+
+// Custom Categories
+let customCategories = JSON.parse(localStorage.getItem("customCategories") || '["🍕 Food", "🛒 Shopping", "🚗 Transport", "🧾 Bills", "🎬 Entertainment", "💰 Salary", "💼 Business", "📱 Internet", "💻 Wifi", "🏷 Subscription", "✈ Travel", "🛍 Beauty", "🎁 Gift", "🐶 Pet", "💸 Investments", "🏠 Home"]');
+
+function populateCategorySelects() {
+  [category, editCategory].forEach(sel => {
+    if (!sel) return;
+    const currentVal = sel.value;
+    sel.innerHTML = customCategories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
+    sel.value = currentVal;
+  });
+}
+populateCategorySelects();
+
+if (openCategoryModalBtn) openCategoryModalBtn.addEventListener("click", () => categoryModal.classList.add("show"));
+if (cancelCategoryBtn) cancelCategoryBtn.addEventListener("click", () => categoryModal.classList.remove("show"));
+    if (saveCategoryBtn) {
+  saveCategoryBtn.addEventListener("click", () => {
+    const name = newCategoryName.value.trim();
+    if (!name) return alert("Enter a category name.");
+    if (!customCategories.includes(name)) {
+      customCategories.push(name);
+      localStorage.setItem("customCategories", JSON.stringify(customCategories));
+      populateCategorySelects();
+      renderCategoryBudgetsUI();
+    }
+    
+    // --- ADD YOUR MESSAGE HERE ---
+    const successMsg = document.createElement("div");
+    successMsg.classList.add("successMsg")
+    successMsg.textContent = "Category added! 🎉";
+    successMsg.style.cssText = "position:fixed; bottom:150px; left:50%; transform:translateX(-50%); background:#22c55e; color:#061008; padding:10px 20px; border-radius:12px; font-weight:700; z-index:3000; box-shadow:0 5px 20px rgba(34,197,94,0.4); opacity:0.7";
+    document.body.appendChild(successMsg);
+    setTimeout(() => successMsg.remove(), 2000);
+    // -----------------------------
+
+    newCategoryName.value = "";
+    categoryModal.classList.remove("show");
   });
 }
 
-// Open currency modal
-currencyBtn.addEventListener("click", () => {
-  updateCurrencyUI();
-  currencyModal.classList.add("show");
-});
-
-// Close currency modal
-closeCurrencyModal.addEventListener("click", () => {
-  currencyModal.classList.remove("show");
-});
-
-// Close when clicking outside
-currencyModal.addEventListener("click", (e) => {
-  if (e.target === currencyModal) {
-    currencyModal.classList.remove("show");
-  }
-});
-
-// Select currency
-currencyOptions.forEach(option => {
-  option.addEventListener("click", () => {
-    selectedCurrency = option.dataset.currency;
-    localStorage.setItem("currency", selectedCurrency);
-    updateCurrencyUI();
-    
-    // Refresh displayed values
-    updateBalance();
-    updateBudget();
-    if (chartInstance) {
-      updateChart();
-    }
-    updateProfile();
-    showExpense();
-    
-    currencyModal.classList.remove("show");
-  });
-});
-
-// Load saved currency
-updateCurrencyUI(); 
-
 let editingTransactionId = null;
+let selectedTransactionForDetail = null;
 let chartInstance = null;
-
-// ===============================
-// TRANSACTIONS ARRAY
-// ===============================
-
 const transactions = [];
-let result;
 
-// ===============================
-// SIGN UP
-// ===============================
-
+// Auth
 signupBtn.addEventListener("click", async () => {
-  if (email.value.trim() === "" || password.value === "") {
-    alert("Please enter your email and password.");
-    return;
-  }
-
+  if (!email.value.trim() || !password.value) return alert("Enter email and password.");
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
+    await createUserWithEmailAndPassword(auth, email.value, password.value);
     alert("Account created successfully!");
-    email.value = "";
-    password.value = "";
-  } catch (error) {
-    alert(error.message);
-  }
+    email.value = ""; password.value = "";
+  } catch (error) { alert(error.message); }
 });
-
-// ===============================
-// LOGIN
-// ===============================
 
 loginBtn.addEventListener("click", async () => {
-  if (email.value.trim() === "" || password.value === "") {
-    alert("Please enter your email and password.");
-    return;
-  }
-
+  if (!email.value.trim() || !password.value) return alert("Enter email and password.");
   try {
-    await signInWithEmailAndPassword(
-      auth,
-      email.value,
-      password.value
-    );
-    email.value = "";
-    password.value = "";
-  } catch (error) {
-    alert(error.message);
-  }
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    email.value = ""; password.value = "";
+  } catch (error) { alert(error.message); }
 });
-
-// ===============================
-// LOGOUT
-// ===============================
 
 logoutBtn.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    transactions.length = 0;
-  } catch (error) {
-    alert(error.message);
-  }
+  try { await signOut(auth); transactions.length = 0; } catch (error) { alert(error.message); }
 });
-
-// ===============================
-// AUTH STATE
-// ===============================
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     authSection.style.display = "none";
-
-    // Show Home & hide others
     homeSection.classList.add("active-section");
     analyticsSection.classList.remove("active-section");
     budgetSection.classList.remove("active-section");
     profileSection.classList.remove("active-section");
     aiSection.classList.remove("active-section");
     savingsSection.classList.remove("active-section");
-
     footerNav.style.display = "flex";
-
     navHome.classList.add("active");
     navAnalytics.classList.remove("active");
     navBudget.classList.remove("active");
-    navAi.classList.remove("active")
-    navSavings.classList.remove("active")
+    navAi.classList.remove("active");
+    navSavings.classList.remove("active");
 
     await loadTransactions();
     await loadBudget(user);
+    await loadCategoryBudgets(user);
   } else {
     authSection.style.display = "flex";
-
     homeSection.classList.remove("active-section");
     analyticsSection.classList.remove("active-section");
     budgetSection.classList.remove("active-section");
     profileSection.classList.remove("active-section");
     aiSection.classList.remove("active-section");
-    savingsSection.classList.remove("active")
-
-
+    savingsSection.classList.remove("active-section");
     footerNav.style.display = "none";
   }
 });
 
-// ===============================
-// ADD TRANSACTION
-// ===============================
+// Transactions Modal Binding
+if (openTransactionModal) openTransactionModal.addEventListener("click", () => transactionModal.classList.add("show"));
+if (closeTransactionModal) closeTransactionModal.addEventListener("click", () => transactionModal.classList.remove("show"));
+transactionModal.addEventListener("click", (e) => { if (e.target === transactionModal) transactionModal.classList.remove("show"); });
 
 addBtn.addEventListener("click", async () => {
-  if (expenseName.value.trim() === "" || amount.value === "") {
-    return;
-  }
-
+  if (!expenseName.value.trim() || !amount.value) return alert("Please enter a title and amount.");
   const user = auth.currentUser;
-  if (!user) {
-    alert("Please login first.");
-    return;
-  }
+  if (!user) return alert("Please login first.");
 
   const now = new Date();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
   const transaction = {
     uid: user.uid,
     id: Date.now(),
     title: expenseName.value.trim(),
     amount: Number(amount.value),
+    note: expenseNote ? expenseNote.value.trim() : "",
     type: type.value,
     category: category.value,
     date: `${now.getDate()} / ${months[now.getMonth()]} / ${now.getFullYear()}`
@@ -404,7 +313,6 @@ addBtn.addEventListener("click", async () => {
   try {
     const docRef = await addDoc(collection(db, "transactions"), transaction);
     transactionModal.classList.remove("show");
-
     transaction.firestoreId = docRef.id;
     transactions.push(transaction);
 
@@ -416,361 +324,382 @@ addBtn.addEventListener("click", async () => {
 
     expenseName.value = "";
     amount.value = "";
-
-    if (chartInstance) {
-      updateChart();
-    }
-  } catch (error) {
-    alert(error.message);
-    console.error(error);
-  }
+    if (expenseNote) expenseNote.value = "";
+    if (chartInstance) updateChart();
+  } catch (error) { alert(error.message); }
 });
 
-const typeSelect = document.getElementById("type");
 const typeToggle = document.getElementById("typeToggle");
-
 typeToggle.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
-  
-  typeToggle.querySelectorAll("button").forEach((b) => b.classList.remove("on"));
+  typeToggle.querySelectorAll("button").forEach(b => b.classList.remove("on"));
   btn.classList.add("on");
-  typeSelect.value = btn.dataset.value;
+  type.value = btn.dataset.value;
 });
-
-// ===============================
-// LOAD USER TRANSACTIONS
-// ===============================
 
 async function loadTransactions() {
   const user = auth.currentUser;
   if (!user) return;
-
   try {
     transactions.length = 0;
-    incomeDisplay.textContent = "Loading..."
-    expenseDisplay.textContent = "Loading..."
-    total.textContent = "Loading..."
+    incomeDisplay.textContent = "Loading...";
+    expenseDisplay.textContent = "Loading...";
+    total.textContent = "Loading...";
     const q = query(collection(db, "transactions"), where("uid", "==", user.uid));
     const snapshot = await getDocs(q);
-
-    snapshot.forEach((document) => {
-      transactions.push({
-        firestoreId: document.id,
-        ...document.data()
-      });
-    });
+    snapshot.forEach(doc => transactions.push({ firestoreId: doc.id, ...doc.data() }));
 
     populateMonthFilter();
     showExpense();
     updateBalance();
     updateProfile();
-  } catch (error) {
-    console.error("Error loading transactions:", error);
-    alert(error.message);
-  }
+  } catch (error) { console.error(error); }
 }
-
-// ===============================
-// SHOW TRANSACTIONS
-// ===============================
 
 function showExpense(listToDisplay = transactions) {
   expenseList.innerHTML = "";
-
   if (listToDisplay.length === 0) {
-    expenseList.innerHTML = `<img src="coins.png"> <h5>Add Transaction To Get Started</h5>`;
+    expenseList.innerHTML = `<img src="coins.png" style="width:64px; margin: 20px auto; display:block;"> <h5 style="text-align:center; color:var(--text-muted);">Add Transaction To Get Started</h5>`;
     return;
   }
 
-  listToDisplay.forEach((transaction) => {
-    const card = document.createElement("div");
-    card.classList.add("list");
+  const grouped = {};
+  listToDisplay.forEach(t => {
+    const dKey = t.date;
+    if (!grouped[dKey]) grouped[dKey] = [];
+    grouped[dKey].push(t);
+  });
 
-    const delBtn = document.createElement("button");
-    delBtn.classList.add("delBtn");
-    delBtn.textContent = "Delete";
-    delBtn.dataset.firestoreId = transaction.firestoreId;
+  Object.entries(grouped).forEach(([dateStr, items]) => {
+    const dateTitle = document.createElement("div");
+    dateTitle.className = "transaction-date-group-title";
+    dateTitle.textContent = dateStr;
+    expenseList.appendChild(dateTitle);
 
-    const editBtn = document.createElement("button");
-    editBtn.classList.add("editBtn");
-    editBtn.textContent = "Edit";
-    editBtn.dataset.firestoreId = transaction.firestoreId;
-
-    if (transaction.type === "income") {
-      card.style.borderLeft = "5px solid limegreen";
-    } else {
-      card.style.borderLeft = "5px solid red";
-    }
-
-    card.innerHTML = `
-      <div class="left">
-        <h4>${transaction.title}</h4>
-        <p>${transaction.category} • ${transaction.date}</p>
-      </div>
-      <div class="right">
-        <h3 class="${transaction.type}">
-          ${transaction.type === "income" ? "+" : "-"}${formatMoney(transaction.amount)}
-        </h3>
-      </div>
-    `;
-
-    expenseList.appendChild(card);
-    card.appendChild(delBtn);
-    card.appendChild(editBtn);
+    items.forEach(transaction => {
+      const card = document.createElement("div");
+      card.classList.add("list");
+      card.style.borderLeft = transaction.type === "income" ? "5px solid var(--accent-green)" : "5px solid var(--accent-red)";
+      card.innerHTML = `
+        <div class="left">
+          <h4>${transaction.title}</h4>
+          <p>${transaction.category} ${transaction.note ? "• " + transaction.note : ""}</p>
+        </div>
+        <div class="right">
+          <h3 class="${transaction.type}">${transaction.type === "income" ? "+" : "-"}${formatMoney(transaction.amount)}</h3>
+        </div>
+      `;
+      card.addEventListener("click", () => openTransactionDetail(transaction));
+      expenseList.appendChild(card);
+    });
   });
 }
 
-// ===============================
-// EDIT + DELETE TRANSACTION
-// ===============================
+function openTransactionDetail(transaction) {
+  selectedTransactionForDetail = transaction;
+  detailContent.innerHTML = `
+    <div><strong>Title:</strong> ${transaction.title}</div>
+    <div><strong>Amount:</strong> ${formatMoney(transaction.amount)} (${transaction.type})</div>
+    <div><strong>Category:</strong> ${transaction.category}</div>
+    <div><strong>Date:</strong> ${transaction.date}</div>
+    <div><strong>Note:</strong> ${transaction.note || "No note added"}</div>
+  `;
+  transactionDetailModal.classList.add("show");
+}
 
-expenseList.addEventListener("click", async (e) => {
-  if (e.target.matches(".editBtn")) {
-    const firestoreId = e.target.dataset.firestoreId;
-    const transaction = transactions.find(t => t.firestoreId === firestoreId);
-    if (!transaction) return;
-    
-    editingTransactionId = firestoreId;
-    editTitle.value = transaction.title;
-    editAmount.value = transaction.amount;
-    editType.value = transaction.type;
-    editCategory.value = transaction.category;
-    editModal.style.display = "flex";
-    return;
-  }
-  
-  if (e.target.matches(".delBtn")) {
-    const firestoreId = e.target.dataset.firestoreId;
-    if (!firestoreId) return;
-    
-    try {
-      await deleteDoc(doc(db, "transactions", firestoreId));
-      const index = transactions.findIndex(t => t.firestoreId === firestoreId);
-      if (index !== -1) {
-        transactions.splice(index, 1);
-      }
-      populateMonthFilter();
-      updateBalance();
-      updateBudget();
-      filteredList();
-      updateProfile();
-      if (chartInstance) {
-        updateChart();
-      }
-    } catch (error) {
-      alert(error.message);
-      console.error(error);
-    }
-  }
+if (closeDetailTopBtn) closeDetailTopBtn.addEventListener("click", () => transactionDetailModal.classList.remove("show"));
+
+openEditFromDetailBtn.addEventListener("click", () => {
+  if (!selectedTransactionForDetail) return;
+  transactionDetailModal.classList.remove("show");
+  editingTransactionId = selectedTransactionForDetail.firestoreId;
+  editTitle.value = selectedTransactionForDetail.title;
+  editAmount.value = selectedTransactionForDetail.amount;
+  if (editNote) editNote.value = selectedTransactionForDetail.note || "";
+  editType.value = selectedTransactionForDetail.type;
+  editCategory.value = selectedTransactionForDetail.category;
+  editModal.classList.add("show");
+});
+
+deleteFromDetailBtn.addEventListener("click", async () => {
+  if (!selectedTransactionForDetail) return;
+  if (!confirm("Are you sure you want to delete this transaction?")) return;
+  try {
+    await deleteDoc(doc(db, "transactions", selectedTransactionForDetail.firestoreId));
+    const idx = transactions.findIndex(t => t.firestoreId === selectedTransactionForDetail.firestoreId);
+    if (idx !== -1) transactions.splice(idx, 1);
+    transactionDetailModal.classList.remove("show");
+    populateMonthFilter();
+    updateBalance();
+    updateBudget();
+    showExpense();
+    updateProfile();
+    if (chartInstance) updateChart();
+  } catch (error) { alert(error.message); }
 });
 
 saveEditBtn.addEventListener("click", async () => {
   if (!editingTransactionId) return;
-  if (editTitle.value.trim() === "" || editAmount.value === "") return;
-  
   const updatedData = {
     title: editTitle.value.trim(),
     amount: Number(editAmount.value),
+    note: editNote ? editNote.value.trim() : "",
     type: editType.value,
     category: editCategory.value
   };
-  
+
   try {
     await updateDoc(doc(db, "transactions", editingTransactionId), updatedData);
-    const transaction = transactions.find(t => t.firestoreId === editingTransactionId);
-    if (transaction) {
-      transaction.title = updatedData.title;
-      transaction.amount = updatedData.amount;
-      transaction.type = updatedData.type;
-      transaction.category = updatedData.category;
+    const t = transactions.find(item => item.firestoreId === editingTransactionId);
+    if (t) {
+      t.title = updatedData.title;
+      t.amount = updatedData.amount;
+      t.note = updatedData.note;
+      t.type = updatedData.type;
+      t.category = updatedData.category;
     }
-    populateMonthFilter();
+    editModal.classList.remove("show");
+    editingTransactionId = null;
     showExpense();
     updateBalance();
     updateBudget();
     updateProfile();
-    
-    if (chartInstance) {
-      updateChart();
-    }
-    
-    editModal.style.display = "none";
-    editingTransactionId = null;
-  } catch (error) {
-    console.error(error);
-    alert(error.message);
-  }
+    if (chartInstance) updateChart();
+  } catch (error) { alert(error.message); }
 });
 
 cancelEditBtn.addEventListener("click", () => {
-  editModal.style.display = "none";
+  editModal.classList.remove("show");
   editingTransactionId = null;
 });
 
-// ===============================
-// UPDATE BALANCE
-// ===============================
-
 function updateBalance() {
-  const income = transactions.reduce((sum, t) => {
-    return t.type === "income" ? sum + t.amount : sum;
-  }, 0);
-
+  const income = transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0);
   incomeDisplay.textContent = `+ ${formatMoney(income)}`;
-
-  const expense = transactions.reduce((sum, t) => {
-    return t.type === "expense" ? sum + t.amount : sum;
-  }, 0);
-
+  const expense = transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0);
   expenseDisplay.textContent = `- ${formatMoney(expense)}`;
-
-  const balance = income - expense;
-  total.textContent = `${formatMoney(balance)}`;
+  total.textContent = `${formatMoney(income - expense)}`;
 }
 
-function formatINR(n) {
-  return Number(n).toLocaleString("en-IN");
+searchBar.addEventListener("input", () => {
+  const q = searchBar.value.toLowerCase().trim();
+  const res = transactions.filter(t => t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || (t.note && t.note.toLowerCase().includes(q)));
+  showExpense(res);
+});
+
+// Budgeting & Category Budgets
+let monthlyBudget = 0;
+let categoryBudgets = {};
+
+async function loadCategoryBudgets(user) {
+  try {
+    const snap = await getDoc(doc(db, "budgets", `${user.uid}_categories`));
+    if (snap.exists()) categoryBudgets = snap.data().limits || {};
+    else categoryBudgets = {};
+    updateBudget();
+  } catch (e) { console.error(e); }
 }
 
-// ===============================
-// SEARCH
-// ===============================
+async function saveCategoryBudgetsToDB() {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    await setDoc(doc(db, "budgets", `${user.uid}_categories`), { uid: user.uid, limits: categoryBudgets });
+  } catch (e) { console.error(e); }
+}
 
-searchBar.addEventListener("input", filteredList);
+function updateBudget() {
+  const now = new Date();
+  const currentMonth = now.toLocaleString("en-US", { month: "short" });
+  const currentYear = now.getFullYear().toString();
 
-function filteredList() {
-  const search = searchBar.value.toLowerCase().trim();
+  let spent = 0;
+  const categorySpent = {};
 
-  result = transactions.filter(
-    (transaction) =>
-      transaction.title.toLowerCase().includes(search) ||
-      transaction.category.toLowerCase().includes(search) ||
-      transaction.type.toLowerCase().includes(search)
-  );
+  transactions.forEach(t => {
+    if (t.type !== "expense") return;
+    const parts = t.date.split(" / ");
+    if (parts.length === 3 && parts[1] === currentMonth && parts[2] === currentYear) {
+      spent += Number(t.amount);
+      categorySpent[t.category] = (categorySpent[t.category] || 0) + Number(t.amount);
+    }
+  });
 
-  if (result.length === 0) {
-    expenseList.innerHTML = `<img src="coins.png"> <h5>No Transactions...</h5>`;
-    return;
+  let computedTotalBudget = monthlyBudget;
+  const catEntries = Object.entries(categoryBudgets);
+  if (catEntries.length > 0) {
+    computedTotalBudget = catEntries.reduce((sum, [, limit]) => sum + Number(limit), 0);
   }
 
-  showExpense(result);
+  budgetAmount.textContent = formatMoney(computedTotalBudget);
+  budgetSpent.textContent = formatMoney(spent);
+  const remaining = computedTotalBudget - spent;
+  budgetRemaining.textContent = remaining >= 0 ? formatMoney(remaining) : `-${formatMoney(Math.abs(remaining))}`;
+
+  const percentage = computedTotalBudget > 0 ? (spent / computedTotalBudget) * 100 : 0;
+  budgetProgress.style.width = `${Math.min(percentage, 100)}%`;
+
+  if (computedTotalBudget > 0 && percentage >= 100) {
+    budgetStatus.textContent = "Total budget exceeded!";
+  } else if (computedTotalBudget > 0) {
+    budgetStatus.textContent = `${percentage.toFixed(0)}% of total budget used`;
+  } else {
+    budgetStatus.textContent = "Set category budgets or total budget";
+  }
+
+  renderCategoryBudgetsUI(categorySpent);
 }
 
-// ===============================
-// NAVIGATION HANDLERS (WITH PROFILE HIDDEN)
-// ===============================
+function renderCategoryBudgetsUI(categorySpent = {}) {
+  if (!categoryBudgetContainer) return;
+  categoryBudgetContainer.innerHTML = "";
 
-navHome.addEventListener("click", () => {
-  navHome.classList.add("active");
-  navAnalytics.classList.remove("active");
-  navBudget.classList.remove("active");
-  navAi.classList.remove("active");
-  navSavings.classList.remove("active"); // Added
+  // Sort categories: those with a set budget limit come first
+  const sortedCategories = [...customCategories].sort((a, b) => {
+    const limitA = categoryBudgets[a] || 0;
+    const limitB = categoryBudgets[b] || 0;
+    // If A has a limit and B doesn't, A comes first (-1)
+    if (limitA > 0 && limitB === 0) return -1;
+    // If B has a limit and A doesn't, B comes first (1)
+    if (limitA === 0 && limitB > 0) return 1;
+    return 0; // Keep original order otherwise
+  });
 
-  homeSection.classList.add("active-section");
-  analyticsSection.classList.remove("active-section");
-  budgetSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section");
-  aiSection.classList.remove("active-section");
-  savingsSection.classList.remove("active-section"); // Added
+  sortedCategories.forEach(cat => {
+    const limit = categoryBudgets[cat] || 0;
+    const spent = categorySpent[cat] || 0;
+    const isExceeded = limit > 0 && spent > limit;
+    const rem = limit - spent;
+    const hasLimit = limit > 0;
+
+    const card = document.createElement("div");
+    card.className = "category-budget-card";
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <strong style="font-size: 0.98rem; font-weight:700; display:block; margin-bottom: 6px;">${cat}</strong>
+          <div style="display:flex; flex-direction:column; gap:3px; color:var(--text-muted); font-size:0.82rem;">
+            <span>Budget: <strong style="color:var(--text-main);">${formatMoney(limit)}</strong></span>
+            <span>Spend: <strong style="color:var(--accent-red);">${formatMoney(spent)}</strong></span>
+            <span>Remaining: <strong style="color:var(--accent-green-bright);">${rem >= 0 ? formatMoney(rem) : "-" + formatMoney(Math.abs(rem))}</strong></span>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <button class="cat-edit-btn" data-cat="${cat}">${hasLimit ? "Edit Limit" : "Set Limit"}</button>
+          ${hasLimit ? `<button class="cat-del-btn" data-cat="${cat}">Remove</button>` : ""}
+        </div>
+      </div>
+      ${isExceeded ? `<div style="font-size: 0.82rem; color: #ef4444; font-style: italic; margin-top: 6px;">⚠️ Budget limit exceeded!</div>` : ""}
+    `;
+    categoryBudgetContainer.appendChild(card);
+  });
+
+  // Re-attach event listeners for edit and delete buttons...
+  categoryBudgetContainer.querySelectorAll(".cat-edit-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activeCategoryForLimit = btn.dataset.cat;
+      categoryLimitModalTitle.textContent = categoryBudgets[activeCategoryForLimit] ? "Edit Category Limit" : "Set Category Limit";
+      categoryLimitModalSubtitle.textContent = `Category: ${activeCategoryForLimit}`;
+      categoryLimitInput.value = categoryBudgets[activeCategoryForLimit] || "";
+      categoryLimitModal.classList.add("show");
+      categoryLimitInput.focus();
+    });
+  });
+
+  categoryBudgetContainer.querySelectorAll(".cat-del-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const cat = btn.dataset.cat;
+      delete categoryBudgets[cat];
+      saveCategoryBudgetsToDB();
+      updateBudget();
+    });
+  });
+}
+
+
+if (saveCategoryLimitBtn) {
+  saveCategoryLimitBtn.addEventListener("click", () => {
+    const val = Number(categoryLimitInput.value);
+    if (!activeCategoryForLimit) return;
+    if (val > 0) {
+      categoryBudgets[activeCategoryForLimit] = val;
+    } else {
+      delete categoryBudgets[activeCategoryForLimit];
+    }
+    saveCategoryBudgetsToDB();
+    categoryLimitModal.classList.remove("show");
+    activeCategoryForLimit = null;
+    updateBudget();
+  });
+}
+
+if (cancelCategoryLimitBtn) {
+  cancelCategoryLimitBtn.addEventListener("click", () => {
+    categoryLimitModal.classList.remove("show");
+    activeCategoryForLimit = null;
+  });
+}
+
+editBudgetBtn.addEventListener("click", () => {
+  budgetModalTitle.textContent = "Set Total Monthly Budget";
+  budgetModal.classList.add("show");
+  budgetInput.value = monthlyBudget > 0 ? monthlyBudget : "";
+  budgetInput.focus();
 });
 
-navAnalytics.addEventListener("click", () => {
-  navAnalytics.classList.add("active");
-  navHome.classList.remove("active");
-  navBudget.classList.remove("active");
-  navAi.classList.remove("active");
-  navSavings.classList.remove("active"); // Added
-
-  analyticsSection.classList.add("active-section");
-  homeSection.classList.remove("active-section");
-  budgetSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section");
-  aiSection.classList.remove("active-section");
-  savingsSection.classList.remove("active-section"); // Added
-
-  updateChart();
-});
-
-navBudget.addEventListener("click", () => {
-  navBudget.classList.add("active");
-  navHome.classList.remove("active");
-  navAnalytics.classList.remove("active");
-  navAi.classList.remove("active");
-  navSavings.classList.remove("active"); // Added
-
-  budgetSection.classList.add("active-section");
-  homeSection.classList.remove("active-section");
-  analyticsSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section");
-  aiSection.classList.remove("active-section");
-  savingsSection.classList.remove("active-section"); // Added
-
+saveBudgetBtn.addEventListener("click", () => {
+  const val = Number(budgetInput.value);
+  if (!val || val <= 0) return alert("Enter valid budget.");
+  monthlyBudget = val;
+  budgetModal.classList.remove("show");
   updateBudget();
 });
 
-navAi.addEventListener("click", () => {
-  navAi.classList.add("active");
-  navHome.classList.remove("active");
-  navAnalytics.classList.remove("active");
-  navBudget.classList.remove("active");
-  navSavings.classList.remove("active"); // Added
+cancelBudgetBtn.addEventListener("click", () => budgetModal.classList.remove("show"));
 
-  aiSection.classList.add("active-section");
-  homeSection.classList.remove("active-section");
-  analyticsSection.classList.remove("active-section");
-  budgetSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section");
-  savingsSection.classList.remove("active-section"); // Added
-});
-navSavings.addEventListener("click", () => {
-  navSavings.classList.add("active");
-  navHome.classList.remove("active");
-  navAnalytics.classList.remove("active");
-  navBudget.classList.remove("active");
-  navAi.classList.remove("active");
+async function loadBudget(user) {
+  if (!user) return;
+  try {
+    const snap = await getDoc(doc(db, "budgets", `${user.uid}_total`));
+    if (snap.exists()) monthlyBudget = snap.data().amount || 0;
+    updateBudget();
+  } catch (e) { console.error(e); }
+}
 
-  savingsSection.classList.add("active-section");
-  homeSection.classList.remove("active-section");
-  analyticsSection.classList.remove("active-section");
-  budgetSection.classList.remove("active-section");
-  profileSection.classList.remove("active-section");
-  aiSection.classList.remove("active-section");
-
-  loadSavingsGoals();
-});
-
-
-
-// ===============================
-// CHART & CATEGORY BREAKDOWN
-// ===============================
+// Analytics & Charts
+if (analyticsMonthSelect) analyticsMonthSelect.addEventListener("change", updateChart);
 
 function updateChart() {
   const canvas = document.getElementById("expenseChart");
   if (!canvas) return;
-
   const ctx = canvas.getContext("2d");
-  const expenseData = transactions.filter(t => t.type === "expense");
+
+  const now = new Date();
+  let targetMonth = now.toLocaleString("en-US", { month: "short" });
+  let targetYear = now.getFullYear().toString();
+
+  if (analyticsMonthSelect && analyticsMonthSelect.value === "previous") {
+    now.setMonth(now.getMonth() - 1);
+    targetMonth = now.toLocaleString("en-US", { month: "short" });
+    targetYear = now.getFullYear().toString();
+  }
+
+  const expenseData = transactions.filter(t => {
+    if (t.type !== "expense") return false;
+    const parts = t.date.split(" / ");
+    return parts.length === 3 && parts[1] === targetMonth && parts[2] === targetYear;
+  });
 
   const categoryTotals = {};
-  expenseData.forEach((transaction) => {
-    categoryTotals[transaction.category] =
-      (categoryTotals[transaction.category] || 0) + transaction.amount;
-  });
+  expenseData.forEach(t => { categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount; });
 
   const labels = Object.keys(categoryTotals);
   const dataValues = Object.values(categoryTotals);
 
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
+  if (chartInstance) chartInstance.destroy();
 
-  const neonPalette = [
-    "#22c55e", "#3b82f6", "#f59e0b",
-    "#ec4899", "#8b5cf6", "#14b8a6", "#ef4444"
-  ];
+  const neonPalette = ["#22c55e", "#3b82f6", "#f59e0b", "#ec4899", "#8b5cf6", "#14b8a6", "#ef4444"];
 
   chartInstance = new Chart(ctx, {
     type: "doughnut",
@@ -785,57 +714,40 @@ function updateChart() {
     },
     options: {
       responsive: true,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            color: "limegreen",
-            font: { family: "Inter", size: 12 }
-          }
-        }
-      }
+      plugins: { legend: { position: "bottom", labels: { color: "limegreen", font: { family: "Inter", size: 12 } } } }
     }
   });
 
-  updateCategoryBreakdown();
+  updateCategoryBreakdown(expenseData);
 }
 
-function updateCategoryBreakdown() {
+function updateCategoryBreakdown(expenses) {
   const breakdown = document.getElementById("categoryBreakdown");
   const totalLabel = document.getElementById("totalExpenseLabel");
   if (!breakdown) return;
 
-  const expenses = transactions.filter(t => t.type === "expense");
   const totalExpense = expenses.reduce((sum, t) => sum + Number(t.amount), 0);
-
   totalLabel.textContent = formatMoney(totalExpense);
 
   if (expenses.length === 0) {
-    breakdown.innerHTML = `<div class="category-empty">No expenses yet</div>`;
+    breakdown.innerHTML = `<div class="category-empty" style="text-align:center; color:var(--text-muted); padding:15px;">No expenses for selected period</div>`;
     return;
   }
 
   const categoryTotals = {};
-  expenses.forEach((t) => {
-    const category = t.category || "Other";
-    categoryTotals[category] = (categoryTotals[category] || 0) + Number(t.amount);
-  });
+  expenses.forEach(t => { categoryTotals[t.category] = (categoryTotals[t.category] || 0) + Number(t.amount); });
 
-  const sortedCategories = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
-
-  breakdown.innerHTML = sortedCategories.map(([category, amount]) => {
-    const percentage = totalExpense === 0 ? 0 : (amount / totalExpense) * 100;
+  const sorted = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1]);
+  breakdown.innerHTML = sorted.map(([cat, amt]) => {
+    const pct = totalExpense === 0 ? 0 : (amt / totalExpense) * 100;
     return `
-      <div class="category-item">
-        <div class="category-top">
-          <div>
-            <div class="category-name">${category}</div>
-            <div class="category-percent">${percentage.toFixed(0)}%</div>
-          </div>
-          <div class="category-amount">${formatMoney(amount)}</div>
+      <div class="category-item" style="margin-bottom: 14px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span style="font-weight:600; font-size:0.9rem;">${cat} (${pct.toFixed(0)}%)</span>
+          <span style="font-weight:700; font-size:0.9rem;">${formatMoney(amt)}</span>
         </div>
-        <div class="category-progress">
-          <div class="category-progress-bar" style="width: ${percentage}%"></div>
+        <div style="width:100%; height:6px; background:rgba(255,255,255,0.07); border-radius:10px; overflow:hidden;">
+          <div style="width:${pct}%; height:100%; background:linear-gradient(90deg, #22c55e, #4ade80);"></div>
         </div>
       </div>
     `;
@@ -845,261 +757,25 @@ function updateCategoryBreakdown() {
 function populateMonthFilter() {
   monthFilter.innerHTML = `<option value="all">All Transactions</option>`;
   const months = new Set();
-
-  transactions.forEach((transaction) => {
-    const parts = transaction.date.split(" / ");
-    if (parts.length === 3) {
-      months.add(`${parts[1]} / ${parts[2]}`);
-    }
+  transactions.forEach(t => {
+    const parts = t.date.split(" / ");
+    if (parts.length === 3) months.add(`${parts[1]} / ${parts[2]}`);
   });
-
-  months.forEach((monthYear) => {
-    const option = document.createElement("option");
-    option.value = monthYear;
-    option.textContent = monthYear;
-    monthFilter.appendChild(option);
+  months.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    monthFilter.appendChild(opt);
   });
 }
 
-function filterByMonth() {
-  const selectedMonth = monthFilter.value;
-  if (selectedMonth === "all") {
-    showExpense(transactions);
-    return;
-  }
-
-  const filtered = transactions.filter((transaction) => {
-    const parts = transaction.date.split(" / ");
-    if (parts.length !== 3) return false;
-    return `${parts[1]} / ${parts[2]}` === selectedMonth;
-  });
-
-  showExpense(filtered);
-}
-monthFilter.addEventListener("change", filterByMonth);
-
-// ===============================
-// BUDGET
-// ===============================
-
-let monthlyBudget = 0;
-
-function updateBudget() {
-  if (monthlyBudget <= 0) {
-    budgetAmount.textContent = formatMoney(0);
-    budgetSpent.textContent = formatMoney(0);
-    budgetRemaining.textContent = formatMoney(0);
-    budgetProgress.style.width = "0%";
-    budgetStatus.textContent = "Set your monthly budget";
-    return;
-  }
-  
-  const now = new Date();
-  const currentMonth = now.toLocaleString("en-US", {
-    month: "short"
-  });
-  const currentYear = now.getFullYear().toString();
-  
-  let spent = 0;
-  
-  transactions.forEach((transaction) => {
-    if (transaction.type !== "expense") return;
-    
-    const parts = transaction.date.split(" / ");
-    if (parts.length !== 3) return;
-    
-    if (
-      parts[1] === currentMonth &&
-      parts[2] === currentYear
-    ) {
-      spent += Number(transaction.amount);
-    }
-  });
-  
-  const remaining = monthlyBudget - spent;
-  const percentage = (spent / monthlyBudget) * 100;
-  
-  budgetAmount.textContent = formatMoney(monthlyBudget);
-  budgetSpent.textContent = formatMoney(spent);
-  
-  budgetRemaining.textContent =
-    remaining >= 0 ?
-    formatMoney(remaining) :
-    `-${formatMoney(Math.abs(remaining))}`;
-  
-  const progress = Math.min(Math.max(percentage, 0), 100);
-  budgetProgress.style.width = `${progress}%`;
-  
-  // Set status text and gradient based on usage threshold
-  if (percentage >= 100) {
-    budgetStatus.textContent = "Budget exceeded!";
-    budgetProgress.style.background = "linear-gradient(90deg, #B91C1C, #EF4444)";
-    budgetAlertH3.textContent = "Oops!"
-    budgetAlertP.textContent = "You've used 100% of your budget!"
-    budgetAlert.style.background = "#ef4444"
-  } else if (percentage >= 80) {
-    budgetStatus.textContent = "You're close to your budget";
-    budgetProgress.style.background = "linear-gradient(90deg, #D97706, #FBBF24)";
-    budgetAlertH3.textContent = "Be careful!"
-    budgetAlertP.textContent = "Looks like you've almost reached your limit..."
-    budgetAlert.style.background = "#fbbf24"
-  } else {
-    budgetStatus.textContent = `${percentage.toFixed(0)}% of budget used`;
-    budgetProgress.style.background = "linear-gradient(90deg, #059669, #34D399)";
-    budgetAlertH3.textContent = "Very good!"
-    budgetAlertP.textContent = "You're on the right track!"
-    budgetAlert.style.background = "#34d399"
-  }
-}
-
-
-
-async function saveBudget() {
-  const user = auth.currentUser;
-  
-  if (!user) {
-    alert("Please login first.");
-    return;
-  }
-  
-  const value = Number(budgetInput.value);
-  
-  if (!value || value <= 0) {
-    alert("Enter a valid budget.");
-    return;
-  }
-  
-  const now = new Date();
-  
-  const month = now.toLocaleString("en-US", {
-    month: "short"
-  });
-  
-  const year = now.getFullYear();
-  
-  // Unique budget document for THIS user + month + year
-  const budgetId = `${user.uid}_${month}_${year}`;
-  
-  try {
-    await setDoc(
-      doc(db, "budgets", budgetId),
-      {
-        uid: user.uid,
-        month: month,
-        year: year,
-        amount: value
-      }
-    );
-    
-    monthlyBudget = value;
-    
-    updateBudget();
-    
-    budgetModal.style.display = "none";
-    budgetInput.value = "";
-    
-  } catch (error) {
-    console.error("Error saving budget:", error);
-    alert("Unable to save budget.");
-  }
-}
-
-
-async function loadBudget(user) {
-  if (!user) {
-    monthlyBudget = 0;
-    updateBudget();
-    return;
-  }
-  
-  // IMPORTANT:
-  // Reset the previous user's budget first.
-  monthlyBudget = 0;
-  updateBudget();
-  
-  const now = new Date();
-  
-  const month = now.toLocaleString("en-US", {
-    month: "short"
-  });
-  
-  const year = now.getFullYear();
-  
-  // Must be identical to saveBudget()
-  const budgetId = `${user.uid}_${month}_${year}`;
-  
-  try {
-    const budgetRef = doc(db, "budgets", budgetId);
-    
-    const snapshot = await getDoc(budgetRef);
-    
-    if (snapshot.exists()) {
-      const data = snapshot.data();
-      
-      // Extra safety: make sure this document actually belongs
-      // to the currently logged-in user.
-      if (data.uid === user.uid) {
-        monthlyBudget = Number(data.amount) || 0;
-      } else {
-        monthlyBudget = 0;
-      }
-    } else {
-      monthlyBudget = 0;
-    }
-    
-    updateBudget();
-    
-  } catch (error) {
-    console.error("Error loading budget:", error);
-    monthlyBudget = 0;
-    updateBudget();
-  }
-}
-// ===============================
-// BUDGET BUTTON EVENTS
-// ===============================
-
-editBudgetBtn.addEventListener("click", () => {
-  budgetModal.style.display = "flex";
-  budgetInput.value = monthlyBudget > 0 ? monthlyBudget : "";
-  budgetInput.focus();
+monthFilter.addEventListener("change", () => {
+  const val = monthFilter.value;
+  if (val === "all") showExpense(transactions);
+  else showExpense(transactions.filter(t => t.date.includes(val)));
 });
 
-saveBudgetBtn.addEventListener("click", saveBudget);
-
-cancelBudgetBtn.addEventListener("click", () => {
-  budgetModal.style.display = "none";
-  budgetInput.value = "";
-});
-// =====================================
-// TRANSACTION MODAL
-// =====================================
-
-const transactionModal = document.getElementById("transactionModal");
-const openTransactionModal = document.getElementById("openTransactionModal");
-const closeTransactionModal = document.getElementById("closeTransactionModal");
-
-if (openTransactionModal) {
-  openTransactionModal.addEventListener("click", () => {
-    transactionModal.classList.add("show");
-  });
-}
-
-if (closeTransactionModal) {
-  closeTransactionModal.addEventListener("click", () => {
-    transactionModal.classList.remove("show");
-  });
-}
-
-transactionModal.addEventListener("click", (e) => {
-  if (e.target === transactionModal) {
-    transactionModal.classList.remove("show");
-  }
-});
-
-const menuBtn = document.getElementById("menuBtn");
-const headerMenu = document.getElementById("headerMenu");
-
+// Menu Dropdown & Themes
 menuBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   headerMenu.classList.toggle("show");
@@ -1111,124 +787,93 @@ document.addEventListener("click", (e) => {
   }
 });
 
-const themeBtn = document.getElementById("themeBtn");
-const themeIcon = document.getElementById("themeIcon");
-const themeText = document.getElementById("themeText");
-
-themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("light-mode");
-  const isLight = document.body.classList.contains("light-mode");
-
-  if (isLight) {
-    themeIcon.className = "fa-solid fa-sun";
+let currentThemeMode = localStorage.getItem("themeMode") || "dark";
+function applyThemeMode(mode) {
+  document.body.classList.remove("light-mode", "theme-navy", "theme-pink");
+  if (mode === "light") {
+    document.body.classList.add("light-mode");
+    profileThemeText.textContent = "Light Mode";
     themeText.textContent = "Light Mode";
+    themeIcon.className = "fa-solid fa-sun";
+  } else if (mode === "navy") {
+    document.body.classList.add("theme-navy");
+    profileThemeText.textContent = "Navy Blue";
+    themeText.textContent = "Navy Blue";
+    themeIcon.className = "fa-solid fa-water";
+  } else if (mode === "pink") {
+    document.body.classList.add("theme-pink");
+    profileThemeText.textContent = "Pink & White";
+    themeText.textContent = "Pink & White";
+    themeIcon.className = "fa-solid fa-heart";
   } else {
-    themeIcon.className = "fa-solid fa-moon";
+    profileThemeText.textContent = "Dark Mode";
     themeText.textContent = "Dark Mode";
+    themeIcon.className = "fa-solid fa-moon";
   }
+  localStorage.setItem("themeMode", mode);
+}
+applyThemeMode(currentThemeMode);
 
-  localStorage.setItem("theme", isLight ? "light" : "dark");
-  syncProfileTheme();
+profileThemeBtn.addEventListener("click", () => {
+  if (currentThemeMode === "dark") currentThemeMode = "light";
+  else if (currentThemeMode === "light") currentThemeMode = "navy";
+  else if (currentThemeMode === "navy") currentThemeMode = "pink";
+  else currentThemeMode = "dark";
+  applyThemeMode(currentThemeMode);
 });
 
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme === "light") {
-  document.body.classList.add("light-mode");
-  themeIcon.className = "fa-solid fa-sun";
-  themeText.textContent = "Light Mode";
+if (themeBtn) {
+  themeBtn.addEventListener("click", () => {
+    if (currentThemeMode === "dark") currentThemeMode = "light";
+    else if (currentThemeMode === "light") currentThemeMode = "navy";
+    else if (currentThemeMode === "navy") currentThemeMode = "pink";
+    else currentThemeMode = "dark";
+    applyThemeMode(currentThemeMode);
+  });
 }
-
-// =====================================
-// PROFILE
-// =====================================
 
 function updateProfile() {
   const user = auth.currentUser;
   if (!user) return;
-
-  profileEmail.textContent = user.email || "No email";
-  profileEmailRow.textContent = user.email || "No email";
+  profileEmail.textContent = user.email;
+  profileEmailRow.textContent = user.email;
   profileTransactions.textContent = transactions.length;
-
-  const income = transactions
-    .filter(t => t.type === "income")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
-
-  const expenses = transactions
-    .filter(t => t.type === "expense")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
-
-  profileIncome.textContent = `${formatMoney(income)}`;
-  profileExpenses.textContent = `${formatMoney(expenses)}`;
+  profileIncome.textContent = formatMoney(transactions.filter(t => t.type === "income").reduce((s, t) => s + t.amount, 0));
+  profileExpenses.textContent = formatMoney(transactions.filter(t => t.type === "expense").reduce((s, t) => s + t.amount, 0));
 }
 
-function syncProfileTheme() {
-  const isLight = document.body.classList.contains("light-mode");
-
-  if (isLight) {
-    profileThemeIcon.className = "fa-solid fa-sun";
-    profileThemeText.textContent = "Light Mode";
-  } else {
-    profileThemeIcon.className = "fa-solid fa-moon";
-    profileThemeText.textContent = "Dark Mode";
-  }
-}
-
-function showProfile() {
+profileBtn.addEventListener("click", () => {
+  headerMenu.classList.remove("show");
   homeSection.classList.remove("active-section");
   analyticsSection.classList.remove("active-section");
   budgetSection.classList.remove("active-section");
+  aiSection.classList.remove("active-section");
+  savingsSection.classList.remove("active-section");
   profileSection.classList.add("active-section");
-
-  navHome.classList.remove("active");
-  navAnalytics.classList.remove("active");
-  navBudget.classList.remove("active");
-
   updateProfile();
-  syncProfileTheme();
-
-  headerMenu.classList.remove("show");
-}
-
-profileBtn.addEventListener("click", showProfile);
-
-profileBackBtn.addEventListener("click", () => {
-  navHome.click();
 });
 
-profileLogoutBtn.addEventListener("click", () => {
-  logoutBtn.click();
-});
+profileBackBtn.addEventListener("click", () => navHome.click());
+profileLogoutBtn.addEventListener("click", () => logoutBtn.click());
 
 changePasswordBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user || !user.email) return;
-
   try {
     await sendPasswordResetEmail(auth, user.email);
     alert("Password reset email sent to " + user.email);
-  } catch (error) {
-    console.error(error);
-    alert(error.message);
-  }
+  } catch (error) { alert(error.message); }
 });
 
 exportDataBtn.addEventListener("click", () => {
-  if (transactions.length === 0) {
-    alert("There are no transactions to export yet.");
-    return;
-  }
-
-  const headers = ["Title", "Amount", "Type", "Category", "Date"];
-  const rows = transactions.map(t => [t.title, t.amount, t.type, t.category, t.date]);
-
+  if (transactions.length === 0) return alert("No transactions to export.");
+  const headers = ["Title", "Amount", "Note", "Type", "Category", "Date"];
+  const rows = transactions.map(t => [t.title, t.amount, t.note || "", t.type, t.category, t.date]);
   const escapeCSV = value => `"${String(value ?? "").replaceAll('"', '""')}"`;
   const csv = [headers, ...rows].map(row => row.map(escapeCSV).join(",")).join("\n");
-
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
-
   link.href = url;
   link.download = "spendwise-transactions.csv";
   document.body.appendChild(link);
@@ -1237,31 +882,41 @@ exportDataBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-profileThemeBtn.addEventListener("click", () => {
-  themeBtn.click();
-  syncProfileTheme();
+currencyBtn.addEventListener("click", () => currencyModal.classList.add("show"));
+closeCurrencyModal.addEventListener("click", () => currencyModal.classList.remove("show"));
+
+// Navigation Tabs
+[
+  [navHome, homeSection],
+  [navAnalytics, analyticsSection, updateChart],
+  [navBudget, budgetSection, updateBudget],
+  [navAi, aiSection],
+  [navSavings, savingsSection, loadSavingsGoals]
+].forEach(([btn, sec, cb]) => {
+  btn.addEventListener("click", () => {
+    [navHome, navAnalytics, navBudget, navAi, navSavings].forEach(b => b.classList.remove("active"));
+    [homeSection, analyticsSection, budgetSection, profileSection, aiSection, savingsSection].forEach(s => s.classList.remove("active-section"));
+    btn.classList.add("active");
+    sec.classList.add("active-section");
+    if (cb) cb();
+  });
 });
 
-// Ensure this is only written once in your entire JS file
+// AI Advisor Chat with Complete Financial Context, Markdown Parser & Auto-retry
 if (aiSendBtn && aiInput) {
-  aiSendBtn.onclick = sendToAI; // Using .onclick avoids duplicate listener stacking if script runs twice
-  aiInput.onkeypress = (e) => {
-    if (e.key === "Enter") sendToAI();
-  };
+  aiSendBtn.onclick = sendToAI;
+  aiInput.onkeypress = (e) => { if (e.key === "Enter") sendToAI(); };
 }
-
 
 async function sendToAI() {
   const userQuery = aiInput.value.trim();
-
   if (!userQuery) return;
 
   if (!auth.currentUser) {
-    appendMessage("Please log in to use SpendWISE AI.", "ai");
+    appendMessage("Please log in to use SpendWISE AI. 🔒", "ai");
     return;
   }
 
-  // Prevent accidental empty requests
   appendMessage(userQuery, "user");
   aiInput.value = "";
   aiInput.disabled = true;
@@ -1270,96 +925,54 @@ async function sendToAI() {
   const loadingId = appendMessage("Thinking...", "ai");
 
   try {
-    // Prepare financial summary from existing app data
-    const totalIncome = transactions
-      .filter(t => t.type === "income")
-      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-
-    const totalExpense = transactions
-      .filter(t => t.type === "expense")
-      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
-
+    const totalIncome = transactions.filter(t => t.type === "income").reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    const totalExpense = transactions.filter(t => t.type === "expense").reduce((sum, t) => sum + Number(t.amount || 0), 0);
     const userBalance = totalIncome - totalExpense;
 
     const categorySummary = {};
-
-    transactions
-      .filter(t => t.type === "expense")
-      .forEach(t => {
-        const category = t.category || "Other";
-
-        categorySummary[category] =
-          (categorySummary[category] || 0) +
-          Number(t.amount || 0);
-      });
+    transactions.filter(t => t.type === "expense").forEach(t => {
+      const cat = t.category || "Other";
+      categorySummary[cat] = (categorySummary[cat] || 0) + Number(t.amount || 0);
+    });
 
     const systemPrompt = `
 You are SpendWISE AI, a friendly and concise personal finance assistant.
 
-The user's current financial snapshot:
+The user's current complete financial snapshot:
 - Currency: ${getCurrency().name} (${getCurrency().symbol})
 - Total income: ${formatMoney(totalIncome)}
 - Total expenses: ${formatMoney(totalExpense)}
 - Current balance: ${formatMoney(userBalance)}
-- Monthly budget: ${
-      monthlyBudget > 0
-        ? formatMoney(monthlyBudget)
-        : "Not set"
-    }
-- Expense categories: ${JSON.stringify(categorySummary)}
+- Monthly budget: ${monthlyBudget > 0 ? formatMoney(monthlyBudget) : "Not set"}
+- Expense categories breakdown: ${JSON.stringify(categorySummary)}
+- Savings goals active count: ${savingsGoals.length}
 
-YOUR TASKS:
-
-1. Explain the user's spending, budget and savings using
-   the financial information provided.
-2. Offer realistic, practical budgeting suggestions.
-3. Help compare products and suggest purchases within the
-   user's stated budget.
-4. When recommending products, provide useful search links
-   for shopping websites when appropriate.
-5. Do not claim to have checked live stock, current prices,
-   reviews or availability unless that information was
-   actually retrieved from a reliable live source.
-6. Respect the user's budget and explain financial trade-offs.
-7. Keep responses clear, friendly and concise.
-8. If information is missing, ask a brief follow-up question.
-9. Never ask for passwords, bank login details, card numbers
-   or other sensitive account credentials.
-
-Use the financial snapshot as context, but do not assume
-it contains every detail of the user's finances.
+Provide realistic, practical budgeting suggestions based on this exact data. Format your response cleanly using short paragraphs, bullet points, and relevant emojis. Avoid raw markdown symbols if possible.
 `;
 
-    const prompt = `${systemPrompt}
+    const prompt = `${systemPrompt}\n\nUser's question:\n${userQuery}`;
+    
+    let result = null;
+    let attempts = 0;
+    while (attempts < 2) {
+      try {
+        result = await aiModel.generateContent(prompt);
+        break;
+      } catch (err) {
+        attempts++;
+        if (attempts >= 2) throw err;
+        await new Promise(res => setTimeout(res, 1000));
+      }
+    }
 
-User's question:
-${userQuery}`;
-
-    // Use Firebase AI Logic; no Gemini API key in this file
-    const result = await aiModel.generateContent(prompt);
     const aiReply = result.response.text();
 
     document.getElementById(loadingId)?.remove();
-
-    appendMessage(
-      aiReply || "I couldn't generate a response. Please try again.",
-      "ai"
-    );
-
+    appendMessage(aiReply || "I couldn't generate a response. Please try again. 🤖", "ai");
   } catch (error) {
     console.error("SpendWISE AI error:", error);
-
     document.getElementById(loadingId)?.remove();
-
-    let message =
-      "SpendWISE AI couldn't respond right now. Please try again.";
-
-    if (error?.message) {
-      console.error("AI error details:", error.message);
-    }
-
-    appendMessage(message, "ai");
-
+    appendMessage("SpendWISE AI servers are temporarily busy right now. Please tap send to try again! 🔄", "ai");
   } finally {
     aiInput.disabled = false;
     aiSendBtn.disabled = false;
@@ -1367,375 +980,247 @@ ${userQuery}`;
   }
 }
 
-function appendMessage(text, sender) {
-  const wrapper = document.createElement("div");
-  wrapper.className = `message-wrapper ${sender === "user" ? "user-wrapper" : "ai-wrapper"}`;
-  
-  // Give the wrapper the unique ID so we can remove the entire row easily
-  const msgId = "msg_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
-  wrapper.id = msgId;
-
-  const avatar = document.createElement("div");
-  avatar.className = `chat-avatar ${sender === "user" ? "user-avatar" : "ai-avatar"}`;
-  
-  if (sender === "user") {
-    avatar.innerHTML = `<i class="fa-solid fa-user-tie"></i>`;
-  } else {
-    avatar.innerHTML = `<i class="fa-solid fa-robot"></i>`;
-  }
-
-  const msgDiv = document.createElement("div");
-  msgDiv.className = `message ${sender === "user" ? "user-msg" : "ai-msg"}`;
-
-  if (text === "Thinking...") {
-    msgDiv.classList.add("loading");
-    msgDiv.innerHTML = `<span></span><span></span><span></span>`;
-  } else {
-    msgDiv.innerHTML = textToHTML(text);
-  }
-
-  wrapper.appendChild(avatar);
-  wrapper.appendChild(msgDiv);
-  chatMessages.appendChild(wrapper);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-
-  // Returns the ID of the outer wrapper row
-  return msgId;
-}
-function textToHTML(text) {
+function formatAIMessage(text) {
   if (!text) return "";
-
   let formatted = text
-    // Convert Markdown Headings (# Product Name) to HTML headers
-    .replace(/^#\s+(.*)$/gm, '<h1>$1</h1>')
-    // Convert Markdown Bold (**Label:**) to strong tags
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Convert Markdown Italics (*Price*) to em tags
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Convert newlines to breaks
+    .replace(/^#+\s+(.*)$/gm, '<h4>$1</h4>')
+    .replace(/^- (.*)$/gm, '<li>$1</li>')
     .replace(/\n/g, '<br>');
 
+  if (formatted.includes('<li>')) {
+    formatted = formatted.replace(/(<li>[\s\S]*?<\/li>)+/g, '<ul>$&</ul>');
+  }
   return formatted;
 }
 
-// ===============================
-// SAVINGS GOALS DOM ELEMENTS
-// ===============================
+function appendMessage(text, sender) {
+  const wrapper = document.createElement("div");
+  const msgId = "msg_" + Math.random();
+  wrapper.id = msgId;
+  wrapper.className = `message-wrapper ${sender === "user" ? "user-wrapper" : "ai-wrapper"}`;
+  
+  if (text === "Thinking...") {
+    wrapper.innerHTML = `
+      <div class="chat-avatar ${sender === "user" ? "user-avatar" : "ai-avatar"}">
+        <i class="fa-solid ${sender === "user" ? "fa-user-tie" : "fa-robot"}"></i>
+      </div>
+      <div class="message ai-msg loading"><span></span><span></span><span></span></div>
+    `;
+  } else {
+    const content = sender === "ai" ? formatAIMessage(text) : text;
+    wrapper.innerHTML = `
+      <div class="chat-avatar ${sender === "user" ? "user-avatar" : "ai-avatar"}">
+        <i class="fa-solid ${sender === "user" ? "fa-user-tie" : "fa-robot"}"></i>
+      </div>
+      <div class="message ${sender === "user" ? "user-msg" : "ai-msg"}">${content}</div>
+    `;
+  }
+  chatMessages.appendChild(wrapper);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return msgId;
+}
 
+// Savings Goals Logic with Preset Target Wiring & Badge Pace Indicator
 let savingsGoals = [];
 let activeCheckinGoalId = null;
 
-// Preset Daily Target Toggle Buttons
+async function loadSavingsGoals() {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    savingsGoals = [];
+    const q = query(collection(db, "savingsGoals"), where("uid", "==", user.uid));
+    const snap = await getDocs(q);
+    snap.forEach(d => savingsGoals.push({ firestoreId: d.id, ...d.data() }));
+    renderGoals();
+  } catch (e) { console.error(e); }
+}
+
+const openGoalModalBtn = document.getElementById("openGoalModalBtn");
+const goalModal = document.getElementById("goalModal");
+const saveGoalBtn = document.getElementById("saveGoalBtn");
+const cancelGoalBtn = document.getElementById("cancelGoalBtn");
+const goalTitle = document.getElementById("goalTitle");
+const goalTargetAmount = document.getElementById("goalTargetAmount");
+const goalDailyTarget = document.getElementById("goalDailyTarget");
+const goalsContainer = document.getElementById("goalsContainer");
 const dailyPresetToggle = document.getElementById("dailyPresetToggle");
+
 if (dailyPresetToggle) {
   dailyPresetToggle.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
+    const btn = e.target.closest(".preset-pill");
     if (!btn) return;
-    dailyPresetToggle.querySelectorAll("button").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
+    dailyPresetToggle.querySelectorAll(".preset-pill").forEach(p => p.classList.remove("active-pill", "on"));
+    btn.classList.add("active-pill", "on");
     goalDailyTarget.value = btn.dataset.value;
   });
 }
 
-// Modal Toggle Listeners
-if (openGoalModalBtn) {
-  openGoalModalBtn.addEventListener("click", () => {
-    goalModal.style.display = "flex";
-  });
-}
-if (cancelGoalBtn) {
-  cancelGoalBtn.addEventListener("click", () => {
-    goalModal.style.display = "none";
-  });
-}
+const checkinModal = document.getElementById("checkinModal");
+const checkinGoalName = document.getElementById("checkinGoalName");
+const checkinYesBtn = document.getElementById("checkinYesBtn");
+const checkinNoBtn = document.getElementById("checkinNoBtn");
+const checkinAmountWrapper = document.getElementById("checkinAmountWrapper");
+const checkinAmount = document.getElementById("checkinAmount");
+const checkinInitialBtns = document.getElementById("checkinInitialBtns");
+const checkinSubmitBtns = document.getElementById("checkinSubmitBtns");
+const submitCheckinBtn = document.getElementById("submitCheckinBtn");
+const cancelCheckinBtn = document.getElementById("cancelCheckinBtn");
 
-// ===============================
-// LOAD & SAVE GOALS FROM FIRESTORE
-// ===============================
-async function loadSavingsGoals() {
-  const user = auth.currentUser;
-  if (!user) return;
+if (openGoalModalBtn) openGoalModalBtn.addEventListener("click", () => {
+  goalModal.classList.add("show");
+  if (goalDailyTarget && !goalDailyTarget.value) goalDailyTarget.value = "300";
+});
+if (cancelGoalBtn) cancelGoalBtn.addEventListener("click", () => goalModal.classList.remove("show"));
 
-  try {
-    savingsGoals = [];
-    const q = query(collection(db, "savingsGoals"), where("uid", "==", user.uid));
-    const snapshot = await getDocs(q);
-
-    snapshot.forEach((document) => {
-      savingsGoals.push({
-        firestoreId: document.id,
-        ...document.data()
-      });
-    });
-
-    renderGoals();
-  } catch (error) {
-    console.error("Error loading savings goals:", error);
-  }
-}
-
-// Create New Goal
 if (saveGoalBtn) {
   saveGoalBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
-    if (!user) {
-      alert("Please login first.");
-      return;
-    }
-
+    if (!user) return alert("Please login first.");
     const title = goalTitle.value.trim();
     const target = Number(goalTargetAmount.value);
-    const daily = Number(goalDailyTarget.value) || 100;
-
-    if (!title || !target || target <= 0) {
-      alert("Please enter a valid goal name and target amount.");
-      return;
-    }
+    const daily = Number(goalDailyTarget.value) || 300;
+    if (!title || !target || target <= 0) return alert("Enter valid goal name and target.");
 
     const newGoal = {
       uid: user.uid,
-      title: title,
+      title,
       targetAmount: target,
       dailyTarget: daily,
       savedAmount: 0,
       streak: 0,
-      lastCheckinDate: null,
       createdAt: new Date().toISOString()
     };
 
     try {
-      const docRef = await addDoc(collection(db, "savingsGoals"), newGoal);
-      newGoal.firestoreId = docRef.id;
+      const ref = await addDoc(collection(db, "savingsGoals"), newGoal);
+      newGoal.firestoreId = ref.id;
       savingsGoals.push(newGoal);
-
-      goalModal.style.display = "none";
-      goalTitle.value = "";
-      goalTargetAmount.value = "";
-      goalDailyTarget.value = "";
+      goalModal.classList.remove("show");
+      goalTitle.value = ""; goalTargetAmount.value = ""; goalDailyTarget.value = "";
       renderGoals();
-    } catch (error) {
-      alert(error.message);
-    }
+    } catch (e) { alert(e.message); }
   });
 }
 
-// ===============================
-// RENDER GOALS UI
-// ===============================
 function renderGoals() {
+  
   if (!goalsContainer) return;
-
   if (savingsGoals.length === 0) {
-    goalsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; padding: 30px; font-size: 0.9rem;">No savings goals yet. Create one to start building your future!</p>`;
+    goalsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; padding: 30px;">No savings goals yet.</p>`;
     return;
   }
-
   goalsContainer.innerHTML = "";
-
-  savingsGoals.forEach((goal) => {
+  savingsGoals.forEach(goal => {
     const isCompleted = goal.savedAmount >= goal.targetAmount;
     const percentage = Math.min(100, (goal.savedAmount / goal.targetAmount) * 100).toFixed(1);
     
-    // Calculate total days taken from creation date to completion/current date
-    const createdDate = new Date(goal.createdAt || Date.now());
-    const currentDate = new Date();
-    const diffTime = Math.abs(currentDate - createdDate);
-    const totalDaysTaken = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+    const remainingAmount = Math.max(0, goal.targetAmount - goal.savedAmount);
+    const dailyRate = Number(goal.dailyTarget) || 300;
+    const estimatedDays = Math.ceil(remainingAmount / dailyRate);
 
     const card = document.createElement("div");
-    card.className = isCompleted ? "goal-card completed" : "goal-card";
+    card.className = isCompleted ? "goal-card completed profile-card" : "goal-card profile-card";
+    card.style.padding = "20px";
 
     if (isCompleted) {
-      // --- COMPLETED GOAL LAYOUT ---
       card.innerHTML = `
-        <div class="goal-top">
-          <div class="goal-title-wrapper">
-            <h3 class="goal-title">${goal.title}</h3>
-            <span class="goal-amounts">Achieved: <strong>${formatMoney(goal.savedAmount)}</strong></span>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; margin:0;">${goal.title}</h3>
+            <span style="color:var(--text-muted); font-size:0.88rem;">Achieved: <strong>${formatMoney(goal.savedAmount)}</strong></span>
           </div>
-          <div class="goal-top-right">
-            <div class="goal-percentage">100%</div>
-            <button class="goal-delete-btn" data-delete-id="${goal.firestoreId}" title="Delete Goal">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>
+          <button class="goal-delete-btn delBtn" data-delete-id="${goal.firestoreId}" style="padding:8px 12px; font-size:0.8rem; border-radius:12px; border:none; cursor:pointer;"><i class="fa-solid fa-trash-can"></i></button>
         </div>
-
-        <h4 class="goal-completed-heading">
-          <i class="fa-solid fa-circle-check"></i> Goal completed!!
-        </h4>
-        <p class="goal-completed-text">
-          Now you can finally buy this or treat yourself to the reward you've worked hard for!
-        </p>
-
-        <div class="goal-progress-container">
-          <div class="goal-progress-bg">
-            <div class="goal-progress-fill" style="width: 100%"></div>
-          </div>
-        </div>
-
-        <div class="goal-completed-footer">
-          <span>It took you <strong>${totalDaysTaken} days</strong> to reach! 🔥</span>
-        </div>
+        <h4 style="color:var(--accent-green-bright); margin-bottom:6px;"><i class="fa-solid fa-circle-check"></i> Goal completed!!</h4>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Now you can treat yourself to your reward!</p>
       `;
     } else {
-      // --- ACTIVE GOAL LAYOUT ---
-      const remainingAmount = Math.max(0, goal.targetAmount - goal.savedAmount);
-      const dailyPace = goal.dailyTarget || 100;
-      const estimatedDays = remainingAmount > 0 ? Math.ceil(remainingAmount / dailyPace) : 0;
-
       card.innerHTML = `
-        <div class="goal-top">
-          <div class="goal-title-wrapper">
-            <h3 class="goal-title">${goal.title}</h3>
-            <span class="goal-amounts">Saved: <strong>${formatMoney(goal.savedAmount)}</strong> / ${formatMoney(goal.targetAmount)}</span>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; margin:0;">${goal.title}</h3>
+            <span style="color:var(--text-muted); font-size:0.88rem;">Saved: <strong>${formatMoney(goal.savedAmount)}</strong> / ${formatMoney(goal.targetAmount)}</span>
           </div>
-          <div class="goal-top-right">
-            <div class="goal-percentage">${percentage}%</div>
-            <button class="goal-delete-btn" data-delete-id="${goal.firestoreId}" title="Delete Goal">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="background: rgba(34,197,94,0.12); color: var(--accent-green-bright); padding: 4px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">${percentage}%</span>
+            <button class="goal-delete-btn delBtn" data-delete-id="${goal.firestoreId}" style="padding:8px 12px; font-size:0.8rem; border-radius:12px; border:none; cursor:pointer;"><i class="fa-solid fa-trash-can"></i></button>
           </div>
         </div>
-
-        <div class="goal-insight-pill">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>At your <strong>${formatMoney(dailyPace)}/day</strong> pace, you need about <strong>${estimatedDays} days</strong> to reach this goal.</span>
+        
+        <div style="background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-green-bright); font-size: 1.1rem;"></i>
+          <span style="font-size: 0.82rem; color: var(--text-main); line-height: 1.4;">
+            At your <strong style="color: var(--accent-green-bright);">${formatMoney(dailyRate)}/day</strong> pace, you need about <strong style="color: var(--accent-green-bright);">${estimatedDays} days</strong> to reach this goal.
+          </span>
         </div>
 
-        <div class="goal-progress-container">
-          <div class="goal-progress-bg">
-            <div class="goal-progress-fill" style="width: ${percentage}%"></div>
-          </div>
+        <div style="width:100%; height:8px; background:var(--input-bg); border-radius:6px; overflow:hidden; margin:14px 0;">
+          <div style="width:${percentage}%; height:100%; background:linear-gradient(90deg, #059669, #34D399);"></div>
         </div>
 
-        <div class="goal-footer">
-          <div class="streak-badge">
-            🔥 Streak: <strong>${goal.streak || 0} days</strong>
-          </div>
-          <button class="checkin-trigger-btn" data-id="${goal.firestoreId}">
-            Did you save today?
-          </button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+          <span style="color:var(--text-muted); font-size:0.85rem;">🔥 Streak: <strong>${goal.streak || 0} days</strong></span>
+          <button class="checkin-trigger-btn secondary-btn" data-id="${goal.firestoreId}" style="height:auto; padding:8px 14px; font-size:0.82rem; width:auto;">Did you save today?</button>
         </div>
       `;
     }
-
+  
     goalsContainer.appendChild(card);
   });
 }
 
-// ===============================
-// CHECK-IN FLOW (YES / NO)
-// ===============================
 if (goalsContainer) {
   goalsContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("checkin-trigger-btn")) {
-      activeCheckinGoalId = e.target.dataset.id;
+    const trigger = e.target.closest(".checkin-trigger-btn");
+    if (trigger) {
+      activeCheckinGoalId = trigger.dataset.id;
       const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
       if (!goal) return;
-
-      checkinGoalName.textContent = `Goal: ${goal.title} (Suggested: ${formatMoney(goal.dailyTarget)})`;
+      checkinGoalName.textContent = `Goal: ${goal.title}`;
       checkinAmount.value = goal.dailyTarget;
-      
-      // Reset modal view
       checkinAmountWrapper.style.display = "none";
       checkinInitialBtns.style.display = "flex";
       checkinSubmitBtns.style.display = "none";
-
-      checkinModal.style.display = "flex";
-    }
-  });
-}
-
-if (checkinNoBtn) {
-  checkinNoBtn.addEventListener("click", () => {
-    // User answered No -> Percentage stays same, close modal
-    checkinModal.style.display = "none";
-    activeCheckinGoalId = null;
-  });
-}
-
-if (checkinYesBtn) {
-  checkinYesBtn.addEventListener("click", () => {
-    // User answered Yes -> Prompt for how much
-    checkinInitialBtns.style.display = "none";
-    checkinAmountWrapper.style.display = "block";
-    checkinSubmitBtns.style.display = "flex";
-  });
-}
-
-if (cancelCheckinBtn) {
-  cancelCheckinBtn.addEventListener("click", () => {
-    checkinModal.style.display = "none";
-  });
-}
-
-if (submitCheckinBtn) {
-  submitCheckinBtn.addEventListener("click", async () => {
-    const addedAmount = Number(checkinAmount.value);
-    if (!activeCheckinGoalId || isNaN(addedAmount) || addedAmount <= 0) {
-      alert("Please enter a valid amount.");
+      checkinModal.classList.add("show");
       return;
     }
 
-    const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
-    if (!goal) return;
-
-    goal.savedAmount += addedAmount;
-    goal.streak = (goal.streak || 0) + 1;
-
-    try {
-      await updateDoc(doc(db, "savingsGoals", goal.firestoreId), {
-        savedAmount: goal.savedAmount,
-        streak: goal.streak
-      });
-
-      checkinModal.style.display = "none";
-      renderGoals();
-      activeCheckinGoalId = null;
-    } catch (error) {
-      alert("Error updating goal: " + error.message);
-    }
-  });
-}
-
-if (goalsContainer) {
-  goalsContainer.addEventListener("click", async (e) => {
-    // Handle Check-in Trigger
-    if (e.target.closest(".checkin-trigger-btn")) {
-      const btn = e.target.closest(".checkin-trigger-btn");
-      activeCheckinGoalId = btn.dataset.id;
-      const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
-      if (!goal) return;
-
-      checkinGoalName.textContent = `Goal: ${goal.title} (Suggested: ${formatMoney(goal.dailyTarget)})`;
-      checkinAmount.value = goal.dailyTarget;
-      
-      checkinAmountWrapper.style.display = "none";
-      checkinInitialBtns.style.display = "flex";
-      checkinSubmitBtns.style.display = "none";
-
-      checkinModal.style.display = "flex";
-      return;
-    }
-
-    // Handle Delete Goal Trigger
-    const deleteBtn = e.target.closest(".goal-delete-btn");
-    if (deleteBtn) {
-      const deleteId = deleteBtn.dataset.deleteId;
-      const goal = savingsGoals.find(g => g.firestoreId === deleteId);
-      if (!goal) return;
-
-      if (confirm(`Are you sure you want to delete your savings goal for "${goal.title}"?`)) {
-        try {
-          await deleteDoc(doc(db, "savingsGoals", deleteId));
-          savingsGoals = savingsGoals.filter(g => g.firestoreId !== deleteId);
+    const del = e.target.closest(".goal-delete-btn");
+    if (del) {
+      const id = del.dataset.deleteId;
+      if (confirm("Delete this savings goal?")) {
+        deleteDoc(doc(db, "savingsGoals", id)).then(() => {
+          savingsGoals = savingsGoals.filter(g => g.firestoreId !== id);
           renderGoals();
-        } catch (error) {
-          alert("Error deleting goal: " + error.message);
-        }
+        });
       }
     }
   });
 }
 
+if (checkinNoBtn) checkinNoBtn.addEventListener("click", () => checkinModal.classList.remove("show"));
+if (checkinYesBtn) checkinYesBtn.addEventListener("click", () => {
+  checkinInitialBtns.style.display = "none";
+  checkinAmountWrapper.style.display = "block";
+  checkinSubmitBtns.style.display = "flex";
+});
+if (cancelCheckinBtn) cancelCheckinBtn.addEventListener("click", () => checkinModal.classList.remove("show"));
+
+if (submitCheckinBtn) {
+  submitCheckinBtn.addEventListener("click", async () => {
+    const amt = Number(checkinAmount.value);
+    const goal = savingsGoals.find(g => g.firestoreId === activeCheckinGoalId);
+    if (!goal || isNaN(amt) || amt <= 0) return;
+    goal.savedAmount += amt;
+    goal.streak = (goal.streak || 0) + 1;
+    await updateDoc(doc(db, "savingsGoals", goal.firestoreId), {
+      savedAmount: goal.savedAmount,
+      streak: goal.streak
+    });
+    checkinModal.classList.remove("show");
+    renderGoals();
+  });
+}
