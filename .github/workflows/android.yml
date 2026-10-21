@@ -58,20 +58,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Generate Android app icons
-        run: |
-          npm install --save-dev @capacitor/assets
-          npx capacitor-assets generate --android \
-            --iconBackgroundColor '#00251B' \
-            --iconBackgroundColorDark '#00251B'
-
-
+      
       - name: Create Android project
         run: npx cap add android
 
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Generate Android app icons
+        run: |
+          npm install --save-dev @capacitor/assets
+          npx capacitor-assets generate --android \
+            --iconBackgroundColor '#00251B' \
+            --iconBackgroundColorDark '#00251B'
+            
       - name: Build release APK
         working-directory: android
         run: |
