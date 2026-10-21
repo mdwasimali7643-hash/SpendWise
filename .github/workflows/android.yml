@@ -28,41 +28,32 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Generate release signing key
+      
+      - name: Restore release signing key
         env:
+          KEY_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           set -euo pipefail
 
-          test -n "$STORE_PASSWORD" || {
-            echo "ANDROID_KEYSTORE_PASSWORD is missing."
-            exit 1
-          }
-          test -n "$KEY_PASSWORD" || {
-            echo "ANDROID_KEY_PASSWORD is missing."
-            exit 1
-          }
-          test -n "$KEY_ALIAS" || {
-            echo "ANDROID_KEY_ALIAS is missing."
-            exit 1
-          }
+          test -n "$KEY_BASE64"
+          test -n "$STORE_PASSWORD"
+          test -n "$KEY_ALIAS"
 
-          keytool -genkeypair -v \
-            -keystore "$RUNNER_TEMP/spendwise-release.jks" \
-            -storetype JKS \
-            -storepass "$STORE_PASSWORD" \
-            -keypass "$KEY_PASSWORD" \
-            -alias "$KEY_ALIAS" \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=SpendWISE, OU=Mobile, O=SpendWISE, L=Kolkata, ST=West Bengal, C=IN"
+          printf '%s' "$KEY_BASE64" \
+            | base64 --decode \
+            > "$RUNNER_TEMP/spendwise-release.jks"
+
+          test -s "$RUNNER_TEMP/spendwise-release.jks"
 
           keytool -list \
             -keystore "$RUNNER_TEMP/spendwise-release.jks" \
-            -storepass "$STORE_PASSWORD"
+            -storepass "$STORE_PASSWORD" \
+            -alias "$KEY_ALIAS"
+
+          echo "Signing keystore restored and alias verified."
+
 
       - name: Install dependencies
         run: npm install
