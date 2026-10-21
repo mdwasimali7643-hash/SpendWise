@@ -28,6 +28,42 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Generate release signing key
+        env:
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+
+          test -n "$STORE_PASSWORD" || {
+            echo "ANDROID_KEYSTORE_PASSWORD is missing."
+            exit 1
+          }
+          test -n "$KEY_PASSWORD" || {
+            echo "ANDROID_KEY_PASSWORD is missing."
+            exit 1
+          }
+          test -n "$KEY_ALIAS" || {
+            echo "ANDROID_KEY_ALIAS is missing."
+            exit 1
+          }
+
+          keytool -genkeypair -v \
+            -keystore "$RUNNER_TEMP/spendwise-release.jks" \
+            -storetype JKS \
+            -storepass "$STORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=SpendWISE, OU=Mobile, O=SpendWISE, L=Kolkata, ST=West Bengal, C=IN"
+
+          keytool -list \
+            -keystore "$RUNNER_TEMP/spendwise-release.jks" \
+            -storepass "$STORE_PASSWORD"
+
       - name: Install dependencies
         run: npm install
 
@@ -43,32 +79,6 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease
 
-      - name: Prepare signing key
-        env:
-          KEY_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        run: |
-          set -eu
-          if [ -z "$KEY_BASE64" ]; then
-            echo "ERROR: ANDROID_KEYSTORE_BASE64 is empty."
-            exit 1
-          fi
-
-          printf '%s' "$KEY_BASE64" | tr -d '[:space:]' > "$RUNNER_TEMP/key-base64.txt"
-
-          if ! base64 --decode "$RUNNER_TEMP/key-base64.txt" > "$RUNNER_TEMP/spendwise-release.jks"; then
-            echo "ERROR: The GitHub secret contains invalid Base64."
-            exit 1
-          fi
-
-          if [ ! -s "$RUNNER_TEMP/spendwise-release.jks" ]; then
-            echo "ERROR: The decoded keystore file is empty."
-            exit 1
-          fi
-
-          echo "Base64 decoded successfully; keystore file is non-empty."
-
-      
-
       - name: Align and sign APK
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -78,14 +88,18 @@ jobs:
           set -euo pipefail
 
           UNSIGNED="android/app/build/outputs/apk/release/app-release-unsigned.apk"
+
           if [ ! -f "$UNSIGNED" ]; then
             echo "Unsigned release APK not found."
             find android/app/build/outputs/apk -type f -name "*.apk"
             exit 1
           fi
 
-          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
-          "$BUILD_TOOLS/zipalign" -f -p 4 "$UNSIGNED" "$RUNNER_TEMP/aligned.apk"
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" \
+            -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+
+          "$BUILD_TOOLS/zipalign" -f -p 4 \
+            "$UNSIGNED" "$RUNNER_TEMP/aligned.apk"
 
           "$BUILD_TOOLS/apksigner" sign \
             --ks "$RUNNER_TEMP/spendwise-release.jks" \
@@ -95,7 +109,25 @@ jobs:
             --out "$RUNNER_TEMP/SpendWISE-release.apk" \
             "$RUNNER_TEMP/aligned.apk"
 
-          "$BUILD_TOOLS/apksigner" verify --verbose "$RUNNER_TEMP/SpendWISE-release.apk"
+          "$BUILD_TOOLS/apksigner" verify --verbose \
+            "$RUNNER_TEMP/SpendWISE-release.apk"
+
+      - name: Encrypt keystore backup
+        env:
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          BACKUP_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          printf '%s' "$STORE_PASSWORD" > "$RUNNER_TEMP/store-password.txt"
+
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -in "$RUNNER_TEMP/spendwise-release.jks" \
+            -out "$RUNNER_TEMP/spendwise-release.jks.enc" \
+            -pass env:BACKUP_PASSWORD
+
+          test -s "$RUNNER_TEMP/spendwise-release.jks.enc"
+          rm -f "$RUNNER_TEMP/store-password.txt"
 
       - name: Upload signed release APK
         uses: actions/upload-artifact@v4
@@ -104,3 +136,11 @@ jobs:
           path: ${{ runner.temp }}/SpendWISE-release.apk
           if-no-files-found: error
           retention-days: 7
+
+      - name: Upload encrypted keystore backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: SpendWISE-encrypted-keystore-backup
+          path: ${{ runner.temp }}/spendwise-release.jks.enc
+          if-no-files-found: error
+          retention-days: 90
