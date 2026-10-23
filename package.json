@@ -2,9 +2,9 @@
 
 {
   "name": "spendwise",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "SpendWISE expense tracker Android app",
+  "description": "SpendWISE personal finance app with budgets, savings goals, analytics, themes, and multi-currency support",
   "scripts": {
     "build": "echo Web assets are ready"
   },
