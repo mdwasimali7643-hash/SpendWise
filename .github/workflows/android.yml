@@ -28,7 +28,6 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      
       - name: Restore release signing key
         env:
           KEY_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -54,16 +53,58 @@ jobs:
 
           echo "Signing keystore restored and alias verified."
 
-
       - name: Install dependencies
         run: npm install
 
-      
       - name: Create Android project
         run: npx cap add android
 
       - name: Sync Capacitor
         run: npx cap sync android
+
+      - name: Set Android app version
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("android/app/build.gradle")
+
+          if not path.is_file():
+              raise SystemExit(
+                  "android/app/build.gradle not found. "
+                  "Check the generated Android project."
+              )
+
+          content = path.read_text()
+
+          content, code_count = re.subn(
+              r'(?m)^(\s*versionCode\s+)\d+\s*$',
+              r'\g<1>210',
+              content,
+              count=1
+          )
+
+          content, name_count = re.subn(
+              r'(?m)^(\s*versionName\s+)[\'"][^\'"]*[\'"]\s*$',
+              r'\g<1>"2.1.0"',
+              content,
+              count=1
+          )
+
+          if code_count != 1 or name_count != 1:
+              raise SystemExit(
+                  "Could not safely set versionCode and versionName. "
+                  "Check the generated build.gradle format."
+              )
+
+          path.write_text(content)
+
+          print("Android versionName: 2.1.0")
+          print("Android versionCode: 210")
+          PY
 
       - name: Generate Android app icons
         run: |
@@ -71,10 +112,11 @@ jobs:
           npx capacitor-assets generate --android \
             --iconBackgroundColor '#00251B' \
             --iconBackgroundColorDark '#00251B'
-            
+
       - name: Build release APK
         working-directory: android
         run: |
+          set -euo pipefail
           chmod +x gradlew
           ./gradlew assembleRelease
 
@@ -87,6 +129,7 @@ jobs:
           set -euo pipefail
 
           UNSIGNED="android/app/build/outputs/apk/release/app-release-unsigned.apk"
+          FINAL_APK="$RUNNER_TEMP/SpendWISE-v2.1.0-release.apk"
 
           if [ ! -f "$UNSIGNED" ]; then
             echo "Unsigned release APK not found."
@@ -105,11 +148,12 @@ jobs:
             --ks-key-alias "$ANDROID_KEY_ALIAS" \
             --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
             --key-pass env:ANDROID_KEY_PASSWORD \
-            --out "$RUNNER_TEMP/SpendWISE-release.apk" \
+            --out "$FINAL_APK" \
             "$RUNNER_TEMP/aligned.apk"
 
-          "$BUILD_TOOLS/apksigner" verify --verbose \
-            "$RUNNER_TEMP/SpendWISE-release.apk"
+          "$BUILD_TOOLS/apksigner" verify --verbose "$FINAL_APK"
+
+          echo "Signed APK created successfully."
 
       - name: Encrypt keystore backup
         env:
@@ -118,21 +162,18 @@ jobs:
         run: |
           set -euo pipefail
 
-          printf '%s' "$STORE_PASSWORD" > "$RUNNER_TEMP/store-password.txt"
-
           openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
             -in "$RUNNER_TEMP/spendwise-release.jks" \
             -out "$RUNNER_TEMP/spendwise-release.jks.enc" \
             -pass env:BACKUP_PASSWORD
 
           test -s "$RUNNER_TEMP/spendwise-release.jks.enc"
-          rm -f "$RUNNER_TEMP/store-password.txt"
 
       - name: Upload signed release APK
         uses: actions/upload-artifact@v4
         with:
-          name: SpendWISE-v1.0-release-APK
-          path: ${{ runner.temp }}/SpendWISE-release.apk
+          name: SpendWISE-v2.1.0-release-APK
+          path: ${{ runner.temp }}/SpendWISE-v2.1.0-release.apk
           if-no-files-found: error
           retention-days: 7
 
