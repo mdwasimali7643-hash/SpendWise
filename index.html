@@ -12,6 +12,9 @@
   <meta name="description" content="SpendWISE is a simple and smart expense tracker for managing your income, expenses, and budget.">
   <meta name="theme-color" content="#0b0f0a">
   <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -22,17 +25,29 @@
     <div class="auth-card">
       <div class="brand">
         <h1>Spend<span>WISE</span></h1>
-      </div>
+      </div> <br>
+      <h2 class="auth-welcome" style="text-align:center;">Welcome Back! 👋</h2>
       <p class="auth-subtitle">Take control of your money with style.</p>
+      
       <div class="auth-form">
         <div class="form-field">
           <label for="email">Email</label>
           <input type="email" id="email" placeholder="you@example.com">
         </div>
-        <div class="form-field">
+        <div class="form-field password-field-wrapper">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter your password">
+          <div class="password-input-container" style="position: relative;">
+            <input type="password" id="password" placeholder="Enter your password" style="padding-right: 45px;">
+            <button type="button" id="togglePasswordBtn" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px;">
+              <i class="fa-solid fa-eye" id="passwordEyeIcon"></i>
+            </button>
+          </div>
         </div>
+        
+        <div style="text-align: right; margin-bottom: 12px;">
+          <button type="button" id="forgotPasswordBtn" style="background: transparent; border: none; color: var(--accent-green-bright); font-size: 0.82rem; font-weight: 600; cursor: pointer;">Forgot Password?</button>
+        </div>
+
         <button id="loginBtn" class="primary-btn">Login <span>→</span></button>
         <div class="divider"><span>or</span></div>
         <button id="signupBtn" class="secondary-btn">Create Account</button>
@@ -56,8 +71,8 @@
           <span>Profile</span>
         </button>
         <button id="themeBtn" class="menu-item">
-          <i id="themeIcon" class="fa-solid fa-moon"></i>
-          <span id="themeText">Dark Mode</span>
+          <i id="themeIcon" class="fa-solid fa-palette"></i>
+          <span id="themeText">Theme</span>
         </button>
         <button id="logoutBtn" class="menu-item logout-item">
           <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -66,68 +81,77 @@
       </div>
     </header>
 
-    <!-- ADD TRANSACTION FAB -->
-    <button id="openTransactionModal" class="add-fab" aria-label="Add transaction">
-      <span>+</span>
-    </button>
-
     <!-- BALANCE CARD -->
     <div class="balance-card">
-      <p>Total Balance</p>
+      <div class="balance-card-header">
+        <div>
+          <p>Total Balance</p>
+          <span class="period-label">This month</span>
+        </div>
+        <div class="secure-badge" title="Your data is private and secure">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+      </div>
       <h1 id="balance"></h1>
     </div>
 
     <!-- INCOME / EXPENSE SUMMARY -->
     <div class="summary">
       <div class="income-card">
-        <p>Income</p>
+        <div class="summary-card-top">
+          <p>Income</p>
+          <div class="card-icon-badge income-badge"><i class="fa-solid fa-arrow-trend-up"></i></div>
+        </div>
         <h2 id="income"></h2>
       </div>
       <div class="expense-card">
-        <p>Expense</p>
+        <div class="summary-card-top">
+          <p>Expense</p>
+          <div class="card-icon-badge expense-badge"><i class="fa-solid fa-arrow-trend-down"></i></div>
+        </div>
         <h2 id="expense"></h2>
       </div>
     </div>
 
-    <!-- ADD TRANSACTION MODAL -->
+    <!-- ADD TRANSACTION MODAL (Normalized vertical height) -->
     <div id="transactionModal" class="transaction-modal">
       <div class="transaction-modal-card">
-        <div class="transaction-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <div class="transaction-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <div>
             <h2>Add Transaction</h2>
-            <p style="margin: 0; text-align: left !important;">Record your income or expense</p>
+            <p style="margin: 0; text-align: left !important; font-size: 0.8rem;">Record income or expense</p>
           </div>
-          <button id="closeTransactionModal" class="modal-close" style="background:transparent; border:none; font-size:24px; color:var(--text-main); cursor:pointer;">×</button>
+          <button id="closeTransactionModal" class="modal-close" style="background:transparent; border:none; font-size:22px; color:var(--text-main); cursor:pointer;">×</button>
         </div>
 
         <div id="inputContainer">
           <div id="inputForm">
-            <div class="form-field">
+            <div class="form-field" style="margin-bottom: 10px;">
               <label for="expenseName">Transaction Title</label>
               <input type="text" id="expenseName" placeholder="e.g. Grocery shopping">
             </div>
-            <div class="form-field">
+            <div class="form-field" style="margin-bottom: 10px;">
               <label for="expenseAmount">Amount</label>
               <input type="number" id="expenseAmount" placeholder="0">
             </div>
-            <div class="form-field">
+            <div class="form-field" style="margin-bottom: 10px;">
               <label for="expenseNote">Note (Optional)</label>
               <input type="text" id="expenseNote" placeholder="Add a brief note...">
             </div>
           </div>
 
           <div id="typeForm">
-            <label style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 6px;">Type</label>
-            <div class="type-toggle" id="typeToggle" style="display:flex; gap:10px; margin-bottom:14px;">
-              <button type="button" data-value="expense" class="secondary-btn on" id="typeEx" style="flex:1; background:rgba(206, 37, 37, 0.15) ;">Expense</button>
-              <button type="button" data-value="income" class="secondary-btn" style="flex:1;">Income</button>
+            <label style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; display: block; margin-bottom: 4px;">Type</label>
+            <div class="type-toggle" id="typeToggle" style="display:flex; gap:10px; margin-bottom:10px;">
+              <button type="button" data-value="expense" class="secondary-btn on" style="flex:1; height: 42px;">Expense</button>
+              <button type="button" data-value="income" class="secondary-btn" style="flex:1; height: 42px;">Income</button>
             </div>
             <select id="type" hidden>
-              <option value="expense" selected >Expense</option>
+              <option value="expense" selected>Expense</option>
               <option value="income">Income</option>
             </select>
 
-            <div class="form-field">
+            <div class="form-field" style="margin-bottom: 10px;">
               <label for="category">Category</label>
               <select id="category">
                 <option>🍕 Food</option>
@@ -146,10 +170,11 @@
                 <option>🐶 Pet</option>
                 <option>💸 Investments</option>
                 <option>🏠 Home</option>
+                <option>Others</option>
               </select>
             </div>
           </div>
-          <button type="submit" id="addBtn" class="primary-btn" style="margin-top: 10px;">+ Add Transaction</button>
+          <button type="submit" id="addBtn" class="primary-btn" style="margin-top: 6px; height: 46px;">+ Add Transaction</button>
         </div>
       </div>
     </div>
@@ -159,7 +184,7 @@
       <div class="edit-card" style="position: relative;">
         <button id="closeDetailTopBtn" class="modal-close-top" aria-label="Close details" style="position: absolute; top: 18px; left: 18px; background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-main); width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;">×</button>
         <h2 style="text-align: center; margin-bottom: 16px;">Transaction Details</h2>
-        <div id="detailContent" style="margin: 20px 0; line-height: 1.6; color: var(--text-main); text-align: left; display: flex; flex-direction: column; gap: 6px; background: var(--card-bg); padding: 24px; border: 2px solid var(--card-border); border-radius: 25px;"></div>
+        <div id="detailContent" style="margin: 20px 0; line-height: 1.6; color: var(--text-main); text-align: left; display: flex; flex-direction: column; gap: 6px;"></div>
         <div class="edit-buttons" style="display: flex; gap: 12px;">
           <button id="openEditFromDetailBtn" class="primary-btn modal-btn" style="flex: 1;">Edit</button>
           <button id="deleteFromDetailBtn" class="delBtn modal-btn" style="flex: 1;">Delete</button>
@@ -198,6 +223,7 @@
             <option>🐶 Pet</option>
             <option>💸 Investments</option>
             <option>🏠 Home</option>
+            <option>Others</option>
           </select>
         </div>
         <div class="edit-buttons">
@@ -231,9 +257,29 @@
         <option value="previous">Previous Month</option>
       </select>
     </div>
-    <div class="chart-wrapper profile-card" style="padding: 20px; margin-bottom: 20px;">
-      <canvas id="expenseChart"></canvas>
+
+    <!-- SLIDING CHARTS CONTAINER (Hand swipe + Dot navigation) -->
+    <div class="chart-slider-wrapper profile-card" id="chartSliderWrapper" style="padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; touch-action: pan-y;">
+      <div class="chart-slider-track" id="chartSliderTrack">
+        <div class="chart-slide">
+          <h4 style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Category Proportion</h4>
+          <div class="chart-canvas-container" style="position: relative; max-width: 260px; margin: 0 auto;">
+            <canvas id="expenseChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-slide">
+          <h4 style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">Category Comparison</h4>
+          <div class="chart-canvas-container" style="position: relative; max-width: 100%; margin: 0 auto;">
+            <canvas id="expenseBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="chart-slider-dots" style="display: flex; justify-content: center; gap: 8px; margin-top: 14px;">
+        <button class="chart-dot active" data-index="0" aria-label="Slide 1"></button>
+        <button class="chart-dot" data-index="1" aria-label="Slide 2"></button>
+      </div>
     </div>
+
     <div class="category-breakdown profile-card" style="padding: 20px;">
       <div class="breakdown-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px;">
         <h3 style="font-size: 1rem; font-weight: 700; margin: 0;">Spending by category</h3>
@@ -242,6 +288,11 @@
       <div id="categoryBreakdown"></div>
     </div>
   </div>
+
+  <!-- ADD TRANSACTION FAB — fixed to viewport, independent of section transforms -->
+  <button id="openTransactionModal" class="add-fab" aria-label="Add transaction">
+    <span>+</span>
+  </button>
 
   <!-- BOTTOM NAVIGATION -->
   <nav class="footer-nav">
@@ -265,7 +316,6 @@
       <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       <span>Goals</span>
     </button>
-
   </nav>
 
   <!-- BUDGET SECTION -->
@@ -377,7 +427,7 @@
   <!-- CHECK-IN MODAL -->
   <div id="checkinModal" class="budget-modal">
     <div class="budget-modal-card">
-      <h2 style="margin-bottom: 15px;">Did you save today?</h2>
+      <h2>Did you save today?</h2>
       <p id="checkinGoalName" style="color: var(--text-muted); margin-bottom: 16px;"></p>
       <div class="form-field" id="checkinAmountWrapper" style="display:none;">
         <label for="checkinAmount">How much did you save?</label>
@@ -394,11 +444,11 @@
     </div>
   </div>
 
-  <!-- CATEGORY LIMIT MODAL (Custom Styled) -->
+  <!-- CATEGORY LIMIT MODAL -->
   <div id="categoryLimitModal" class="budget-modal">
     <div class="budget-modal-card">
       <h2 id="categoryLimitModalTitle">Set Category Limit</h2>
-      <p id="categoryLimitModalSubtitle" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; margin-top: 15px; text-align: center;"></p>
+      <p id="categoryLimitModalSubtitle" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; text-align: center;"></p>
       <div class="form-field" style="margin: 14px 0;">
         <label>Limit Amount</label>
         <input type="number" id="categoryLimitInput" placeholder="Enter limit amount" min="1">
@@ -417,7 +467,7 @@
         <button id="profileBackBtn" class="profile-back-btn" aria-label="Back to home">
           <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <h2 style="text-align: center; font-weight: 800; text-transform: uppercase;">Profile</h2>
+        <h2 style="text-align: center; text-transform: uppercase; font-weight: 800;">Profile</h2>
         <div class="profile-header-spacer"></div>
       </header>
 
@@ -425,7 +475,7 @@
         <div class="profile-avatar">
           <i class="fa-solid fa-user"></i>
         </div>
-        <h1>SpendWISE User</h1>
+        <h1>SpendWISE User</h1> <br />
         <p id="profileEmail">your@email.com</p>
       </div>
 
@@ -477,7 +527,7 @@
           <i class="fa-solid fa-chevron-right profile-chevron"></i>
         </button>
         <button id="profileThemeBtn" class="profile-row">
-          <div class="profile-row-icon"><i id="profileThemeIcon" class="fa-solid fa-moon"></i></div>
+          <div class="profile-row-icon"><i id="profileThemeIcon" class="fa-solid fa-palette"></i></div>
           <div class="profile-row-content">
             <strong>Appearance</strong>
             <small id="profileThemeText">Dark Mode</small>
@@ -495,12 +545,40 @@
       </div>
 
       <div class="profile-card">
+        <div class="profile-card-title"><span>SUPPORT & FEEDBACK</span></div>
+        <button id="feedbackBtn" class="profile-row">
+          <div class="profile-row-icon"><i class="fa-solid fa-comment-dots"></i></div>
+          <div class="profile-row-content">
+            <strong>Send Feedback</strong>
+            <small>klarotech.official@gmail.com</small>
+          </div>
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+        </button>
+        <a href="https://klarotech.netlify.app" target="_blank" class="profile-row" style="text-decoration: none;">
+          <div class="profile-row-icon"><i class="fa-solid fa-globe"></i></div>
+          <div class="profile-row-content">
+            <strong>Visit Website</strong>
+            <small>klarotech.netlify.app</small>
+          </div>
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+        </a>
+      </div>
+
+      <div class="profile-card">
         <div class="profile-card-title"><span>DATA & PRIVACY</span></div>
         <button id="exportDataBtn" class="profile-row">
           <div class="profile-row-icon"><i class="fa-solid fa-download"></i></div>
           <div class="profile-row-content">
             <strong>Export Transactions</strong>
             <small>Download your data as CSV</small>
+          </div>
+          <i class="fa-solid fa-chevron-right profile-chevron"></i>
+        </button>
+        <button id="deleteAccountBtn" class="profile-row" style="color: var(--accent-red);">
+          <div class="profile-row-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--accent-red);"><i class="fa-solid fa-user-xmark"></i></div>
+          <div class="profile-row-content">
+            <strong>Delete Account</strong>
+            <small style="color: var(--accent-red); opacity: 0.8;">Permanently remove account</small>
           </div>
           <i class="fa-solid fa-chevron-right profile-chevron"></i>
         </button>
@@ -511,7 +589,7 @@
           <img src="logo.png" height="50px" width="50px" id="icon" alt="logo" style="border-radius: 50%;">
         </div>
         <p style="margin: 10px 0 4px;">Simple, private expense tracking.</p>
-        <small style="color: var(--text-muted);">Version 2.0.0</small>
+        <small style="color: var(--text-muted);">Version 2.1.0</small>
       </div>
 
       <button id="profileLogoutBtn" class="profile-logout">
